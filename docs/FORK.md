@@ -144,5 +144,11 @@ mypy agent_reach
 - `vendor/` 不进 git；任何明文 Cookie/SESSDATA 不得进入 diff（提交前
   `git diff | grep SESSDATA=` 必须为空）。
 - 每次同步后跑测试；不自动 push，不向 upstream 开 PR。
-- skill 的源头是仓库里的 `agent_reach/skill/`；改完用 `agent-reach setup` 或
-  `manage.place_skill()` 重铺，不直接改 `~/.agents` 或 magpie 的副本。
+- skill 的源头是仓库里的 `agent_reach/skill/`；**模板里的 `{{CHANNEL_TABLE}}` 和 `{{VERSION}}` 由 `render_skill()` 现场从代码生成**，所以改完模板必须重铺，**不能裸 `cp`**——裸 cp 会把占位符原样铺出去，Agent 打开 skill 看到的是一张空表。重铺方式二选一：
+  ```bash
+  agent-reach update --sync-only          # 正规入口：重铺 skill + 同步工具
+  # 或只重渲染这一份：
+  python -c "from pathlib import Path; from agent_reach.runtime.manage import render_skill; \
+Path.home().joinpath('.agents/skills/agent-reach/SKILL.md').write_text(render_skill('zh'), encoding='utf-8')"
+  ```
+  验证：`grep -c '{{' ~/.hermes/skills/agent-reach/SKILL.md` 必须是 0，且渠道行数 15。
