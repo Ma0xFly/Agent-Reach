@@ -13,12 +13,14 @@ All notable changes to this project will be documented in this file.
 - 新增抖音：可以搜视频、读视频和看评论；需要本机装好 MediaCrawler，并由你本人用抖音账号登录一次。
 - 小红书、B站、YouTube 的内容读取更稳：小红书优先直连、失败再开浏览器；B站补了站内搜索和视频总结；YouTube 能看评论，也能列出频道最近的视频。
 - 新增渠道开发脚手架和维护文档，以后加平台更快。
+- B站短链校验、Cookie 路径和抖音本地依赖/并发保护更可靠。
 
 English:
 
 - Douyin: search videos, read a video and view comments; requires a local MediaCrawler and a one-time Douyin login by you.
 - Xiaohongshu, Bilibili and YouTube reads are more reliable: Xiaohongshu tries a direct backend first and falls back to the browser; Bilibili adds site search and video summaries; YouTube can read comments and list a channel's recent videos.
 - A new channel scaffold and maintainer guide make adding a platform faster.
+- Bilibili short-link validation, Cookie paths, and Douyin's local dependency/concurrency checks are more reliable.
 
 中文（技术细节）：
 
@@ -29,6 +31,8 @@ English:
 - `agent-reach check` 默认按每个 Action 的 `timeout` 取预算，不再固定 60s。
 - P5：新增 `scripts/new_channel.py`、`docs/ADD-A-SOURCE.md`；生成的 skill 渠道表直接展示真实后端链。
 - P6：新增 `docs/FORK.md`、`scripts/upstream-sync.sh`；同步固定用 `git rebase --rebase-merges`，并跑全量测试与 3 条只读冒烟；演练结果 891 passed。
+- B站：`channels/bilibili._bvid` 只跟随 `b23.tv`/`www.b23.tv` 的 HTTP(S) 短链，lookalike、userinfo、非 HTTP(S) 在发请求前返回 `BAD_INPUT`；`native/bilibili._cookie_file` 支持 `XDG_DATA_HOME`；`timestamps` 明确只接受字符串。
+- 抖音：`native/douyin.setup_problems` smoke-import `playwright`/`httpx`/`sqlalchemy`/`aiosqlite` 并给出 requirements 安装命令；`_run` 加跨进程 single-flight 锁，避免并发 MediaCrawler 撞 `browser_data`。
 
 English (technical):
 
@@ -39,6 +43,8 @@ English (technical):
 - `agent-reach check` now budgets each Action by its own `timeout` instead of a fixed 60s.
 - P5: added `scripts/new_channel.py`, `docs/ADD-A-SOURCE.md`; the rendered skill channel table now shows the real backend chain.
 - P6: added `docs/FORK.md` and `scripts/upstream-sync.sh`; syncing uses `git rebase --rebase-merges`, then the full test suite and three read-only smoke commands (rehearsal: 891 passed).
+- Bilibili: `channels/bilibili._bvid` follows only HTTP(S) short links on `b23.tv`/`www.b23.tv`; lookalikes, userinfo and non-HTTP(S) targets fail with `BAD_INPUT` before any request. `native/bilibili._cookie_file` honors `XDG_DATA_HOME`, and `timestamps` is documented as string-only.
+- Douyin: `native/douyin.setup_problems` smoke-imports `playwright`/`httpx`/`sqlalchemy`/`aiosqlite` and prints the requirements install command; `_run` takes a cross-process single-flight lock so two MediaCrawler runs cannot collide on `browser_data`.
 
 ## [1.6.1] - 2026-11-01
 

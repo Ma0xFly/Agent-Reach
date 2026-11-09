@@ -12,6 +12,7 @@ import json
 import re
 import urllib.request
 from typing import Any
+from urllib.parse import urlsplit
 
 from agent_reach.runtime.result import (
     BAD_INPUT,
@@ -30,6 +31,7 @@ from agent_reach.runtime.sessions import has_login_state, session_env
 from .base import Action, Channel, Param
 
 _BV_RE = re.compile(r"BV[0-9A-Za-z]{10}")
+_BV_HINT = "target must be a BV id or a bilibili.com / b23.tv video link"
 _BILI_LOGIN_HINT = (
     "Bilibili subtitles need a login. Ask the user to run `agent-reach login bilibili` "
     "and scan the QR code themselves; never log in on their behalf."
@@ -38,18 +40,35 @@ _BILI_LOGIN_HINT = (
 
 def _bvid(target: str, timeout: float) -> str:
     """BV id from a BV id, a video link, or a b23.tv short link."""
+    from agent_reach.utils.url import host_matches
+
     t = str(target).strip()
     m = _BV_RE.search(t)
     if m:
         return m.group(0)
     if "b23.tv/" in t:
         url = t if "://" in t else f"https://{t}"
+        try:
+            parsed = urlsplit(url)
+            host = (parsed.hostname or "").lower().rstrip(".")
+            _ = parsed.port  # malformed/out-of-range ports raise here
+        except ValueError:
+            raise ReachError(BAD_INPUT, _BV_HINT) from None
+        # Follow a short link only when the caller named b23.tv itself; a
+        # lookalike host or userinfo disguise must never trigger a HEAD.
+        if (
+            host not in {"b23.tv", "www.b23.tv"}
+            or not host_matches(url, "b23.tv")
+            or parsed.username is not None
+            or parsed.password is not None
+        ):
+            raise ReachError(BAD_INPUT, _BV_HINT)
         req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": _UA})
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             m = _BV_RE.search(resp.geturl())
         if m:
             return m.group(0)
-    raise ReachError(BAD_INPUT, "target must be a BV id or a bilibili.com / b23.tv video link")
+    raise ReachError(BAD_INPUT, _BV_HINT)
 
 
 def _bili_json(args: list, timeout: float) -> Any:
@@ -212,7 +231,7 @@ class BilibiliChannel(Channel):
                 ),
                 Param(
                     "timestamps",
-                    "prepend [HH:MM:SS] timestamps: true or false",
+                    "prepend [HH:MM:SS] timestamps: true or false (string; JSON booleans are rejected)",
                     required=False,
                     type=str,
                     default="true",
