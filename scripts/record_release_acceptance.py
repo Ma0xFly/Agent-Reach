@@ -39,6 +39,8 @@ FROM_SEARCH = {
     ("linkedin", "read"): ("jobs", "target", None),
     ("boss", "read"): ("search", "target", None),
     ("bilibili", "summary"): ("read", "target", None),
+    ("douyin", "read"): ("search", "target", None),
+    ("douyin", "comments"): ("search", "target", None),
 }
 
 
