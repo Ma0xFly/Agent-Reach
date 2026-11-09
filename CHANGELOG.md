@@ -6,6 +6,38 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [Unreleased]
+
+中文：
+
+- 新增抖音：可以搜视频、读视频和看评论；需要本机装好 MediaCrawler，并由你本人用抖音账号登录一次。
+- 小红书、B站、YouTube 的内容读取更稳：小红书优先直连、失败再开浏览器；B站补了站内搜索和视频总结；YouTube 能看评论，也能列出频道最近的视频。
+- 新增渠道开发脚手架和维护文档，以后加平台更快。
+
+English:
+
+- Douyin: search videos, read a video and view comments; requires a local MediaCrawler and a one-time Douyin login by you.
+- Xiaohongshu, Bilibili and YouTube reads are more reliable: Xiaohongshu tries a direct backend first and falls back to the browser; Bilibili adds site search and video summaries; YouTube can read comments and list a channel's recent videos.
+- A new channel scaffold and maintainer guide make adding a platform faster.
+
+中文（技术细节）：
+
+- 小红书：`agent_reach/native/xhs.py` 挂 search/read/comments，链为 `native → opencli`，Action timeout 120s；错误码按 action 区分（search 风控 vs detail 删除/设私）。
+- B站：`agent_reach/native/bilibili.py` 挂 search/read/subtitle/summary；read 链为 `bilibili-api → native → bili-cli`；summary 需要 `summary_api_key`。
+- 抖音：`agent_reach/channels/douyin.py` + `native/douyin.py`，MediaCrawler subprocess + jsonl；标准/CDP 档案隔离，CDP 调试端口用 9223。
+- YouTube：`comments` 用 `--write-comments --write-info-json` 读 info.json，`channel` 用 `--flat-playlist`；comments raw 标 `content_scope` 和 `exhaustive=false`。
+- `agent-reach check` 默认按每个 Action 的 `timeout` 取预算，不再固定 60s。
+- P5：新增 `scripts/new_channel.py`、`docs/ADD-A-SOURCE.md`；生成的 skill 渠道表直接展示真实后端链。
+
+English (technical):
+
+- Xiaohongshu: `agent_reach/native/xhs.py` serves search/read/comments with a `native → opencli` chain and a 120s action timeout; error codes distinguish search risk checks from deleted/private notes.
+- Bilibili: `agent_reach/native/bilibili.py` serves search/read/subtitle/summary; read uses `bilibili-api → native → bili-cli`; summary needs `summary_api_key`.
+- Douyin: `agent_reach/channels/douyin.py` + `native/douyin.py` drive MediaCrawler as a subprocess and read its jsonl output; standard and CDP profiles are isolated, with the CDP debug port on 9223.
+- YouTube: `comments` uses `--write-comments --write-info-json` and reads `info.json`; `channel` uses `--flat-playlist`; comment raw data is marked with `content_scope` and `exhaustive=false`.
+- `agent-reach check` now budgets each Action by its own `timeout` instead of a fixed 60s.
+- P5: added `scripts/new_channel.py`, `docs/ADD-A-SOURCE.md`; the rendered skill channel table now shows the real backend chain.
+
 ## [1.6.1] - 2026-11-01
 
 中文：

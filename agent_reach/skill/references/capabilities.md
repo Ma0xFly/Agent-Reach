@@ -14,11 +14,12 @@ Read when the user asks what can be fetched or how complete a result is. Declare
 | 渠道 | 公开路径可尝试 | Reach 补充与边界 |
 |---|---|---|
 | GitHub | 公开仓库、README、Issue/PR | 仓库搜索、仓库/Issue/PR 读取和返回的评论；私有权限另行判断 |
-| YouTube | 搜索、标题、简介；原生工具可能取得部分评论及字幕正文 | search/read/subtitle/transcribe；当前没有统一 comments 动作；轨道列表不等于字幕正文，无字幕时转录依赖相应工具 |
-| B 站 | 搜索、简介；部分公开接口可返回评论及父子 ID | search/read/hot/subtitle；当前没有统一 comments 动作；字幕随视频和访问路径而异 |
+| YouTube | 搜索、标题、简介；原生工具可能取得部分评论及字幕正文 | search/read/subtitle/comments/channel/transcribe；comments 返回已加载评论及回复，不是完整导出；channel 只列最近视频；轨道列表不等于字幕正文，无字幕时转录依赖相应工具 |
+| B 站 | 搜索、简介；部分公开接口可返回评论及父子 ID | search/read/hot/subtitle/summary；没有统一 comments 动作；summary 需要 `summary_api_key`；字幕随视频和访问路径而异 |
 | Reddit | 搜索、正文、部分评论；某些公开 JSON 可含父子 ID | 浏览器 search/read/subreddit；登录依所选路径决定，不保证完整评论树、全部回复；不提供发评论 |
 | X/Twitter | 搜索命中的公开单帖；部分官方公开嵌入可返回全文 | search/profile/tweets/thread；单帖可读不代表回复流可读，不保证完整评论树 |
-| 小红书 | 公开列表或索引可能有笔记 ID、作者、标题，空字段不能补猜 | search/read/comments；文字描述、顶级评论及已加载回复；不保证全部评论，不声称理解图片/视频 |
+| 小红书 | 公开列表或索引可能有笔记 ID、作者、标题，空字段不能补猜 | search/read/comments；优先 native，失败才走浏览器；文字描述、顶级评论及已加载回复；不保证全部评论，不声称理解图片/视频 |
+| 抖音 | 公开搜索摘要、部分视频页可能可读 | search/read/comments；依赖本机 MediaCrawler 和抖音浏览器档案；评论为已加载部分，不承诺完整导出；实验性，可能触发平台验证 |
 | Instagram | 部分索引和主页浅层信息；HTML 应用壳不算帖文 | search 搜用户、profile 主页、posts 指定用户帖子描述；无统一评论动作，不声称理解图片/视频 |
 | Facebook | 部分索引或 HTML 摘要；摘要可能被截断 | search/profile；无统一详情或评论动作，不把搜索摘要当全文 |
 | LinkedIn | 搜公开职位、读公开 JD | jobs/read 先尝试公开网页；指定 opencli 才直接走站内；不保证所有职位可读 |
@@ -29,3 +30,5 @@ Read when the user asks what can be fetched or how complete a result is. Declare
 | 小宇宙 | 节目页标题、简介 | transcribe 整集转文字；需要用户提供 Groq Key（`agent-reach configure groq-key`） |
 
 登录后的能力表述使用“可启用/尝试上述浏览器动作”，不使用“登录后支持全部评论”。用户跳过登录时交付已有公开证据。
+
+后端链按“从先到后”尝试：`NEED_SETUP`、`UPSTREAM_BROKEN`、`TIMEOUT` 会进入下一条，终态错误不会。某个平台的结果不完整时，先说明实际拿到的是哪一部分，不把公开摘要或已加载评论说成完整内容。

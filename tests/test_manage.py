@@ -643,6 +643,29 @@ def test_skill_lists_every_channel_and_has_no_placeholders(env):
             assert f"| {ch.name} |" in text
 
 
+def test_skill_shows_the_backend_chain_in_try_order(env, monkeypatch):
+    class Multi(_Base):
+        name, level = "multi", "optional"
+        actions = (
+            Action(
+                "search",
+                "s",
+                (Param("query", "q"),),
+                (("native", "_go"), ("opencli", "_go")),
+                live_test={"query": "x"},
+            ),
+        )
+
+    monkeypatch.setattr(manage, "_channels", lambda: [Multi()])
+
+    zh = manage.render_skill("zh")
+    en = manage.render_skill("en")
+    assert "动作（后端链，从左到右）" in zh
+    assert "| multi | optional | search: native → opencli |" in zh
+    assert "actions (backend chain, left to right)" in en
+    assert "| multi | optional | search: native → opencli |" in en
+
+
 def _seed_our_copy(path):
     path.mkdir(parents=True)
     (path / "SKILL.md").write_text("---\nname: agent-reach\ndescription: old\n---\nold\n")
