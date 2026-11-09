@@ -33,6 +33,7 @@ English:
 - P6：新增 `docs/FORK.md`、`scripts/upstream-sync.sh`；同步固定用 `git rebase --rebase-merges`，并跑全量测试与 3 条只读冒烟；演练结果 891 passed。
 - B站：`channels/bilibili._bvid` 只跟随 `b23.tv`/`www.b23.tv` 的 HTTP(S) 短链，lookalike、userinfo、非 HTTP(S) 在发请求前返回 `BAD_INPUT`；`native/bilibili._cookie_file` 支持 `XDG_DATA_HOME`；`timestamps` 明确只接受字符串。
 - 抖音：`native/douyin.setup_problems` smoke-import `playwright`/`httpx`/`sqlalchemy`/`aiosqlite` 并给出 requirements 安装命令；`_run` 加跨进程 single-flight 锁，避免并发 MediaCrawler 撞 `browser_data`。
+- 发布验收：刷新 `.github/release-acceptance.json`；14 个动作通过 real-cli 验收，32 个未测动作按维护者 waiver 记录（缺登录/Key 或 YouTube bot-check）。
 
 English (technical):
 
@@ -45,6 +46,7 @@ English (technical):
 - P6: added `docs/FORK.md` and `scripts/upstream-sync.sh`; syncing uses `git rebase --rebase-merges`, then the full test suite and three read-only smoke commands (rehearsal: 891 passed).
 - Bilibili: `channels/bilibili._bvid` follows only HTTP(S) short links on `b23.tv`/`www.b23.tv`; lookalikes, userinfo and non-HTTP(S) targets fail with `BAD_INPUT` before any request. `native/bilibili._cookie_file` honors `XDG_DATA_HOME`, and `timestamps` is documented as string-only.
 - Douyin: `native/douyin.setup_problems` smoke-imports `playwright`/`httpx`/`sqlalchemy`/`aiosqlite` and prints the requirements install command; `_run` takes a cross-process single-flight lock so two MediaCrawler runs cannot collide on `browser_data`.
+- Release acceptance: refreshed `.github/release-acceptance.json`; 14 actions passed real-cli acceptance and 32 untested actions carry maintainer waivers (missing login/key or YouTube bot-check).
 
 ## [1.6.1] - 2026-11-01
 
