@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""YouTube — video info, search, subtitles (yt-dlp) and Whisper transcription."""
+"""YouTube — info, search, subtitles, comments, channel lists (yt-dlp) and Whisper transcription."""
 
 import html
 import json
@@ -7,14 +7,17 @@ import os
 import re
 import shutil
 import sys
+from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 from agent_reach.runtime.result import (
     BAD_INPUT,
     NOT_FOUND,
     PLATFORM_BLOCKED,
     RATE_LIMITED,
+    UPSTREAM_BROKEN,
     ReachError,
     make_item,
+    unix_to_iso,
 )
 from agent_reach.runtime.run import CommandFailed, run_cmd
 from agent_reach.utils.paths import private_temporary_directory
@@ -22,9 +25,25 @@ from agent_reach.utils.paths import private_temporary_directory
 from .base import Action, Channel, Param
 
 _VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
+_VIDEO_PATH_RE = re.compile(r"^/(?:shorts|embed|live)/([A-Za-z0-9_-]{11})/?$")
+_CHANNEL_ID_RE = re.compile(r"^UC[A-Za-z0-9_-]{22}$")
+_CHANNEL_PATH_RE = re.compile(
+    r"^/(?P<kind>@[^/]+|channel/[^/]+|c/[^/]+|user/[^/]+)"
+    r"(?:/(?P<tab>videos|shorts|streams|live|featured))?/?$"
+)
 _VTT_TIME_RE = re.compile(r"^\d{2}:\d{2}(:\d{2})?\.\d{3} --> ")
 _TAG_RE = re.compile(r"<[^>]+>")
 _RAW_KEYS = ("id", "duration", "view_count", "like_count", "channel_id", "tags", "categories")
+_COMMENT_RAW_KEYS = (
+    "id",
+    "parent",
+    "like_count",
+    "reply_count",
+    "is_pinned",
+    "author_is_uploader",
+    "author_id",
+    "timestamp",
+)
 
 
 def _ytdlp_argv(*args: str) -> list:
@@ -36,15 +55,61 @@ def _ytdlp_argv(*args: str) -> list:
 
 
 def _video_url(target: str) -> str:
+    """Normalize a single-video target; reject channels, playlists and other pages."""
     from agent_reach.utils.url import host_matches
 
+    hint = "target must be a YouTube video link or 11-character video id"
     t = str(target).strip()
-    if _VIDEO_ID_RE.match(t):
+    if _VIDEO_ID_RE.fullmatch(t):
         return f"https://www.youtube.com/watch?v={t}"
     candidate = t if "://" in t else f"https://{t}"
-    if host_matches(candidate, "youtube.com", "youtu.be"):
-        return candidate
-    raise ReachError(BAD_INPUT, "target must be a YouTube link or 11-character video id")
+    if not host_matches(candidate, "youtube.com", "youtu.be"):
+        raise ReachError(BAD_INPUT, hint)
+    parsed = urlsplit(candidate)
+    host = (parsed.hostname or "").lower().rstrip(".")
+    if host == "youtu.be" or host.endswith(".youtu.be"):
+        video_id = parsed.path.strip("/")
+        if _VIDEO_ID_RE.fullmatch(video_id):
+            return f"https://www.youtube.com/watch?v={video_id}"
+        raise ReachError(BAD_INPUT, hint)
+    if parsed.path.rstrip("/") == "/watch":
+        video_id = parse_qs(parsed.query).get("v", [""])[0]
+        if _VIDEO_ID_RE.fullmatch(video_id):
+            return f"https://www.youtube.com/watch?v={video_id}"
+        raise ReachError(BAD_INPUT, hint)
+    match = _VIDEO_PATH_RE.fullmatch(parsed.path)
+    if match:
+        return f"https://www.youtube.com/watch?v={match.group(1)}"
+    raise ReachError(BAD_INPUT, hint)
+
+
+def _channel_url(target: str) -> str:
+    """Normalize a channel page to a video tab; reject non-channel pages."""
+    from agent_reach.utils.url import host_matches
+
+    hint = "target must be a YouTube channel URL, @handle or UC channel id"
+    t = str(target).strip()
+    if t.startswith("@"):
+        return _channel_url(f"https://www.youtube.com/{t}")
+    if _CHANNEL_ID_RE.fullmatch(t):
+        return f"https://www.youtube.com/channel/{t}/videos"
+    candidate = t if "://" in t else f"https://{t}"
+    if not host_matches(candidate, "youtube.com"):
+        raise ReachError(BAD_INPUT, hint)
+    parsed = urlsplit(candidate)
+    path = parsed.path.rstrip("/") or "/"
+    match = _CHANNEL_PATH_RE.fullmatch(path)
+    if not match:
+        raise ReachError(BAD_INPUT, hint)
+    kind = match.group("kind")
+    if kind.startswith("channel/"):
+        channel_id = kind.split("/", 1)[1]
+        if not _CHANNEL_ID_RE.fullmatch(channel_id):
+            raise ReachError(BAD_INPUT, hint)
+    tab = match.group("tab") or "videos"
+    if tab == "featured":
+        tab = "videos"
+    return urlunsplit((parsed.scheme, parsed.netloc, f"/{kind}/{tab}", "", ""))
 
 
 def _run_ytdlp(args: list, timeout: float, cwd=None) -> str:
@@ -70,6 +135,34 @@ def _iso_date(yyyymmdd) -> str:
     return f"{s[:4]}-{s[4:6]}-{s[6:8]}" if len(s) == 8 and s.isdigit() else ""
 
 
+def _flat_video_item(info: dict) -> dict:
+    """One item from a yt-dlp flat playlist/search entry."""
+    video_id = info.get("id")
+    return make_item(
+        title=info.get("title"),
+        url=info.get("url") or (f"https://www.youtube.com/watch?v={video_id}" if video_id else None),
+        author=info.get("channel") or info.get("uploader"),
+        text=info.get("description"),
+        raw={key: info.get(key) for key in _RAW_KEYS},
+    )
+
+
+def _comment_link(video_url: str, comment_id) -> str:
+    """Canonical watch URL plus ``lc``; never put ``lc`` in a fragment."""
+    parsed = urlsplit(video_url)
+    host = (parsed.hostname or "").lower().rstrip(".")
+    if host == "youtu.be" or host.endswith(".youtu.be"):
+        video_id = parsed.path.strip("/")
+    else:
+        video_id = parse_qs(parsed.query).get("v", [""])[0]
+    if not _VIDEO_ID_RE.fullmatch(video_id):
+        return video_url
+    query = {"v": video_id}
+    if comment_id:
+        query["lc"] = str(comment_id)
+    return urlunsplit(("https", "www.youtube.com", "/watch", urlencode(query), ""))
+
+
 def vtt_to_text(vtt: str) -> str:
     """Plain text from WebVTT: drop headers, timings, tags; collapse auto-caption repeats."""
     out: list[str] = []
@@ -91,7 +184,7 @@ def vtt_to_text(vtt: str) -> str:
 
 class YouTubeChannel(Channel):
     name = "youtube"
-    description = "YouTube 视频和字幕"
+    description = "YouTube 视频、字幕、评论和频道列表"
 
     level = "default"
     #: transcribe re-encodes and chunks audio
@@ -125,6 +218,28 @@ class YouTubeChannel(Channel):
             live_test={"target": "https://www.youtube.com/watch?v=jNQXAC9IVRw"},
         ),
         Action(
+            "comments",
+            "Read comments and loaded replies from a video; not an exhaustive export",
+            (
+                Param("target", "video link or id"),
+                Param("limit", "max comments (1..100)", required=False, type=int, default=20),
+            ),
+            (("yt-dlp", "_ytdlp_comments"),),
+            live_test={"target": "https://www.youtube.com/watch?v=jNQXAC9IVRw", "limit": 2},
+            timeout=120,
+        ),
+        Action(
+            "channel",
+            "List recent videos from a channel (up to limit)",
+            (
+                Param("target", "channel URL (videos/shorts/streams/live), @handle or UC channel id"),
+                Param("limit", "max videos (1..50)", required=False, type=int, default=10),
+            ),
+            (("yt-dlp", "_ytdlp_channel"),),
+            live_test={"target": "https://www.youtube.com/@YouTube/videos", "limit": 2},
+            timeout=120,
+        ),
+        Action(
             "transcribe",
             "Speech-to-text of a video's audio (uses Groq/OpenAI Whisper quota)",
             (Param("target", "video link or id"),),
@@ -137,6 +252,16 @@ class YouTubeChannel(Channel):
         from agent_reach.utils.url import host_matches
 
         return host_matches(url, "youtube.com", "youtu.be")
+
+    def validate_params(self, action: str, params: dict) -> None:
+        if action == "comments":
+            _video_url(params["target"])
+            if not 1 <= params["limit"] <= 100:
+                raise ReachError(BAD_INPUT, "limit must be between 1 and 100 comments")
+        elif action == "channel":
+            _channel_url(params["target"])
+            if not 1 <= params["limit"] <= 50:
+                raise ReachError(BAD_INPUT, "limit must be between 1 and 50 videos")
 
     # ── unified entry backends ──
 
@@ -161,16 +286,8 @@ class YouTubeChannel(Channel):
             if not line.strip():
                 continue
             info = json.loads(line)
-            vid = info.get("id")
-            items.append(
-                make_item(
-                    title=info.get("title"),
-                    url=info.get("url") or (f"https://www.youtube.com/watch?v={vid}" if vid else None),
-                    author=info.get("channel") or info.get("uploader"),
-                    text=info.get("description"),
-                    raw={k: info.get(k) for k in _RAW_KEYS},
-                )
-            )
+            if isinstance(info, dict):
+                items.append(_flat_video_item(info))
         return items
 
     def _ytdlp_subtitle(self, *, target: str, lang: str, timeout: float) -> list:
@@ -203,6 +320,93 @@ class YouTubeChannel(Channel):
         title = next((ln for ln in out.splitlines() if ln.strip()), None)
         code = best.rsplit(".", 2)[-2] if best.count(".") >= 2 else None
         return [make_item(title=title, url=url, text=text, raw={"lang": code})]
+
+    def _ytdlp_comments(self, *, target: str, limit: int, timeout: float) -> list:
+        url = _video_url(target)
+        failure = None
+        with private_temporary_directory(prefix="agent-reach-comments-") as tmp:
+            try:
+                _run_ytdlp(
+                    [
+                        "--skip-download",
+                        "--no-playlist",
+                        "--write-comments",
+                        "--write-info-json",
+                        "--extractor-args", f"youtube:max_comments={limit}",
+                        "-o", "%(id)s.%(ext)s",
+                        url,
+                    ],
+                    timeout,
+                    cwd=tmp,
+                )
+            except ReachError as exc:
+                # An incomplete reply thread still leaves a usable partial info file.
+                failure = exc
+            video_id = parse_qs(urlsplit(url).query).get("v", [""])[0]
+            expected = f"{video_id}.info.json"
+            files = sorted(name for name in os.listdir(tmp) if name.endswith(".info.json"))
+            if expected in files:
+                files = [expected] + [name for name in files if name != expected]
+            if not files:
+                if failure is not None:
+                    raise failure
+                raise ReachError(UPSTREAM_BROKEN, "yt-dlp wrote no info JSON for this video")
+            try:
+                with open(os.path.join(tmp, files[0]), encoding="utf-8") as stream:
+                    info = json.load(stream)
+            except (OSError, ValueError) as exc:
+                if failure is not None:
+                    raise failure
+                raise ReachError(UPSTREAM_BROKEN, f"yt-dlp info JSON is unreadable: {exc}") from None
+
+        comments = info.get("comments") if isinstance(info, dict) else None
+        if comments is None:
+            if failure is not None:
+                raise failure
+            raise ReachError(
+                NOT_FOUND,
+                "YouTube comments are disabled or unavailable for this video",
+            )
+        if not isinstance(comments, list):
+            raise ReachError(UPSTREAM_BROKEN, "yt-dlp returned an invalid comments field")
+        items = []
+        for comment in comments[:limit]:
+            if not isinstance(comment, dict):
+                continue
+            raw = {key: comment.get(key) for key in _COMMENT_RAW_KEYS if comment.get(key) is not None}
+            raw["content_scope"] = "comments_and_replies"
+            raw["exhaustive"] = False
+            if failure is not None:
+                raw["partial"] = True
+            items.append(
+                make_item(
+                    url=_comment_link(url, comment.get("id")),
+                    author=comment.get("author"),
+                    published_at=unix_to_iso(comment.get("timestamp")),
+                    text=comment.get("text"),
+                    raw=raw,
+                )
+            )
+        if failure is not None and not items:
+            raise failure
+        return items
+
+    def _ytdlp_channel(self, *, target: str, limit: int, timeout: float) -> list:
+        url = _channel_url(target)
+        out = _run_ytdlp(
+            ["--flat-playlist", "--dump-single-json", "--playlist-items", f"1:{limit}", url],
+            timeout,
+        )
+        try:
+            payload = json.loads(out)
+        except ValueError:
+            raise ReachError(UPSTREAM_BROKEN, "yt-dlp channel output is not JSON") from None
+        entries = payload.get("entries") if isinstance(payload, dict) else None
+        if entries is None:
+            return []
+        if not isinstance(entries, list):
+            raise ReachError(UPSTREAM_BROKEN, "yt-dlp returned an invalid channel entries field")
+        return [_flat_video_item(info) for info in entries[:limit] if isinstance(info, dict)]
 
     def _whisper_transcribe(self, *, target: str, timeout: float) -> list:
         from agent_reach.transcribe import NoProviderConfigured, TranscribeError

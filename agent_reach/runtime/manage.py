@@ -138,7 +138,7 @@ def browser_login_next(ch) -> str:
 
 # ── checks ──
 
-def run_checks(names: Optional[List[str]] = None, timeout: float = 60.0, search_only: bool = False) -> dict:
+def run_checks(names: Optional[List[str]] = None, timeout: Optional[float] = None, search_only: bool = False) -> dict:
     """Live-test the added channels (or the named ones); persist results in state."""
     from .dispatch import run_action
 
@@ -152,7 +152,7 @@ def run_checks(names: Optional[List[str]] = None, timeout: float = 60.0, search_
         data = state.load()
         selected = [c for c in selected if is_added(c, data)]
     import math
-    if not math.isfinite(timeout) or timeout <= 0:
+    if timeout is not None and (not math.isfinite(timeout) or timeout <= 0):
         raise ReachError(BAD_INPUT, "timeout must be finite and positive")
     results = []
     for ch in selected:
@@ -161,8 +161,9 @@ def run_checks(names: Optional[List[str]] = None, timeout: float = 60.0, search_
                 continue
             # Search acceptance exercises the same route as an agent command, once.
             backends = [(None, None)] if search_only else action.backends
+            action_timeout = timeout if timeout is not None else (action.timeout or 60.0)
             for label, _ in backends:
-                out = run_action(ch, action.name, dict(action.live_test), timeout=timeout, only_backend=label)
+                out = run_action(ch, action.name, dict(action.live_test), timeout=action_timeout, only_backend=label)
                 label = out.get("backend") or label or (out["meta"]["attempts"][-1]["backend"] if out["meta"]["attempts"] else None)
                 passed = bool(out["ok"] and out["items"])
                 err = out["error"] or (None if passed else {"code": "EMPTY", "message": "succeeded but returned no items"})

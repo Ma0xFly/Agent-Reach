@@ -234,7 +234,7 @@ def _cmd_check(args: Sequence[str]) -> int:
     parser = _Parser(prog="check", add_help=False)
     parser.add_argument("channels", nargs="*")
     parser.add_argument("--text", action="store_true")
-    parser.add_argument("--timeout", type=float, default=60.0)
+    parser.add_argument("--timeout", type=float, default=None)
     parser.add_argument("--search", action="store_true", help="Verify search/jobs through the normal route only")
     try:
         ns = parser.parse_args(list(args))
