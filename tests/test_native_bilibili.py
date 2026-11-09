@@ -329,14 +329,27 @@ def test_config_and_env_cookies_merge_by_name(monkeypatch):
 
 def test_cdp_cookie_file_is_loaded(monkeypatch, tmp_path):
     monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.delenv("XDG_DATA_HOME", raising=False)
     path = tmp_path / ".local" / "share" / "bili-sub" / "cookies.json"
     path.parent.mkdir(parents=True)
     path.write_text(json.dumps({"SESSDATA": "file-cookie", "other": "ignored"}))
     assert _native()._load_cookies_from_cdp_file() == {"SESSDATA": "file-cookie"}
 
 
+def test_cdp_cookie_file_honors_xdg_data_home(monkeypatch, tmp_path):
+    native = _native()
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "xdg"))
+    path = tmp_path / "xdg" / "bili-sub" / "cookies.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({"SESSDATA": "xdg-cookie"}))
+
+    assert native._cookie_file() == path
+    assert native._load_cookies_from_cdp_file() == {"SESSDATA": "xdg-cookie"}
+
+
 def test_cdp_cookie_file_refuses_symlinks(monkeypatch, tmp_path):
     monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.delenv("XDG_DATA_HOME", raising=False)
     target = tmp_path / "real-cookies.json"
     target.write_text(json.dumps({"SESSDATA": "sneaky"}))
     path = tmp_path / ".local" / "share" / "bili-sub" / "cookies.json"
@@ -348,6 +361,7 @@ def test_cdp_cookie_file_refuses_symlinks(monkeypatch, tmp_path):
 def test_cdp_cookie_file_rejects_oversized_files(monkeypatch, tmp_path):
     native = _native()
     monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.delenv("XDG_DATA_HOME", raising=False)
     path = tmp_path / ".local" / "share" / "bili-sub" / "cookies.json"
     path.parent.mkdir(parents=True)
     path.write_bytes(b"x" * (native.MAX_COOKIE_FILE_BYTES + 1))

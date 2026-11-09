@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Native Douyin backend: MediaCrawler subprocess argv, jsonl reads and failure mapping."""
 
+import contextlib
 import json
 import sqlite3
 import time
@@ -10,6 +11,16 @@ import pytest
 
 from agent_reach.runtime.result import PLATFORM_BLOCKED, ReachError
 from agent_reach.runtime.run import CommandFailed
+
+
+@pytest.fixture(autouse=True)
+def _no_mediacrawler_lock(monkeypatch):
+    """Unit tests must not create lock files under the real state directory."""
+    from agent_reach.runtime import browser_binding
+
+    monkeypatch.setattr(
+        browser_binding, "execution_lock", lambda profile: contextlib.nullcontext()
+    )
 
 
 def _native():
@@ -654,6 +665,24 @@ def test_nonzero_exit_with_a_captcha_signal_is_blocked(monkeypatch, tmp_path):
     assert exc.value.code == PLATFORM_BLOCKED
 
 
+def test_run_reports_busy_when_another_mediacrawler_holds_the_lock(monkeypatch, tmp_path):
+    from agent_reach.runtime import browser_binding
+
+    native = _native()
+
+    @contextlib.contextmanager
+    def busy(profile):
+        raise ReachError("BUSY", "Another Reach command is using this Chrome profile")
+        yield
+
+    monkeypatch.setattr(browser_binding, "execution_lock", busy)
+
+    with pytest.raises(ReachError) as exc:
+        native._run(["python", "-c", "x"], timeout=5, root=tmp_path, env={}, python=tmp_path / "py")
+    assert exc.value.code == "BUSY"
+    assert "Douyin MediaCrawler" in exc.value.message
+
+
 def test_run_passes_cwd_env_and_timeout(monkeypatch, tmp_path):
     native = _native()
     seen = {}
@@ -779,7 +808,30 @@ def test_setup_problems_report_missing_login(monkeypatch, tmp_path):
     interpreter = _fake_tree(root)
     monkeypatch.setattr(native, "_install", lambda: (root, interpreter))
     monkeypatch.setattr(native, "_profile_has_sessionid", lambda profile: False)
+    monkeypatch.setattr(native, "_dependency_problems", lambda root, interpreter: [])
 
     problems = native.setup_problems()
     assert problems
     assert "headless no" in problems[0]
+
+
+def test_setup_problems_report_incomplete_dependencies(monkeypatch, tmp_path):
+    native = _native()
+    root = tmp_path / "MediaCrawler"
+    interpreter = _fake_tree(root)
+    monkeypatch.setattr(native, "_install", lambda: (root, interpreter))
+    monkeypatch.setattr(native, "_profile_has_sessionid", lambda profile: True)
+
+    def fail(*args, **kwargs):
+        raise CommandFailed(
+            "UPSTREAM_BROKEN",
+            "exit 1",
+            stderr="ModuleNotFoundError: No module named 'playwright'",
+        )
+
+    monkeypatch.setattr(native, "run_cmd", fail)
+
+    problems = native.setup_problems()
+    assert problems
+    assert "requirements.txt" in problems[0]
+    assert "playwright" in problems[0]

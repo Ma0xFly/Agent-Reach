@@ -246,7 +246,10 @@ def _configured_cookies() -> Dict[str, str]:
 
 
 def _cookie_file() -> Path:
-    return home_dir() / ".local/share/bili-sub/cookies.json"
+    """User cookie export path; XDG_DATA_HOME wins over the legacy location."""
+    data_home = os.environ.get("XDG_DATA_HOME", "").strip()
+    base = Path(data_home).expanduser() if data_home else home_dir() / ".local/share"
+    return base / "bili-sub" / "cookies.json"
 
 
 def _load_cookies_from_cdp_file() -> Dict[str, str]:

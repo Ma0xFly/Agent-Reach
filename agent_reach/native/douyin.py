@@ -39,6 +39,8 @@ _LEGACY_ROOT = Path("~/Projects/MediaCrawler")
 
 _PROFILE = "dy_user_data_dir"
 _CDP_PROFILE = "cdp_dy_user_data_dir"
+_RUN_LOCK = "douyin-mediacrawler"
+_DEPENDENCY_IMPORTS = ("playwright", "httpx", "sqlalchemy", "aiosqlite")
 _COOKIE_NAME = "sessionid"
 _CHROME_EPOCH_OFFSET = 11644473600  # 1601-01-01 → 1970-01-01, in seconds
 #: Avoid Agent Reach's own 9222 browser; MediaCrawler launches its own profile here.
@@ -403,6 +405,26 @@ def _run(
     argv: list[str], *, timeout: float, root: Path, env: dict, python: Path,
     action: str = "",
 ) -> str:
+    """Run MediaCrawler under a cross-process single-flight lock."""
+    from agent_reach.runtime.browser_binding import execution_lock
+
+    try:
+        with execution_lock(_RUN_LOCK):
+            return _run_locked(argv, timeout=timeout, root=root, env=env, python=python, action=action)
+    except ReachError as exc:
+        if exc.code == "BUSY":
+            raise ReachError(
+                "BUSY",
+                "Another Douyin MediaCrawler run is already using the profile",
+                hint="Wait for the running query to finish; do not start a second MediaCrawler on browser_data.",
+            ) from None
+        raise
+
+
+def _run_locked(
+    argv: list[str], *, timeout: float, root: Path, env: dict, python: Path,
+    action: str = "",
+) -> str:
     """Run MediaCrawler and translate its exit/output into unified codes."""
     try:
         output = run_cmd(
@@ -536,14 +558,39 @@ def comments(*, target: str, limit: int, timeout: float) -> list[dict]:
     return rows
 
 
+def _dependency_problems(root: Path, interpreter: Path) -> list[str]:
+    """Smoke-import the runtime packages MediaCrawler needs before a real run."""
+    code = "import " + ", ".join(_DEPENDENCY_IMPORTS)
+    try:
+        run_cmd(
+            [str(interpreter), "-c", code],
+            timeout=10,
+            cwd=str(root),
+            label="MediaCrawler",
+        )
+    except CommandFailed as exc:
+        detail = _message(_last_line(f"{exc.stdout}\n{exc.stderr}"), "import failed")
+        install = shlex.join(
+            [str(interpreter), "-m", "pip", "install", "-r", str(root / "requirements.txt")]
+        )
+        return [
+            f"MediaCrawler dependencies are incomplete ({detail}); run: {install}"
+        ]
+    except ReachError as exc:
+        return [f"MediaCrawler dependency check failed: {_message(exc.message, 'unknown error')}"]
+    return []
+
+
 def setup_problems() -> list[str]:
-    """Local-only doctor diagnostics: vendor/interpreter and saved login."""
+    """Local-only doctor diagnostics: vendor/interpreter, login and dependencies."""
     try:
         root, interpreter = _install()
     except ReachError as exc:
         return [f"{exc.message}: {exc.hint}" if exc.hint else exc.message]
+    problems = []
     try:
         _browser_plan(root, interpreter)
     except ReachError as exc:
-        return [f"{exc.message}: {exc.hint}" if exc.hint else exc.message]
-    return []
+        problems.append(f"{exc.message}: {exc.hint}" if exc.hint else exc.message)
+    problems.extend(_dependency_problems(root, interpreter))
+    return problems

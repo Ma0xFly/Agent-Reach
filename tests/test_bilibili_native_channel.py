@@ -48,6 +48,57 @@ def test_subtitle_declares_part_language_and_timestamps():
     assert params["part"].type is int and params["part"].default == 1
     assert params["language"].default == "ai-zh"
     assert params["timestamps"].type is str and params["timestamps"].default == "true"
+    assert "JSON booleans" in params["timestamps"].help
+
+
+class _Redirect:
+    def __init__(self, url):
+        self._url = url
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def geturl(self):
+        return self._url
+
+
+def test_bvid_follows_only_real_b23_links(monkeypatch):
+    calls = []
+
+    def fake_urlopen(request, timeout):
+        calls.append((request.full_url, timeout))
+        return _Redirect(f"https://www.bilibili.com/video/{BV}")
+
+    monkeypatch.setattr(bilibili.urllib.request, "urlopen", fake_urlopen)
+
+    assert bilibili._bvid("https://b23.tv/abc123", 5) == BV
+    assert calls == [("https://b23.tv/abc123", 5)]
+
+
+@pytest.mark.parametrize(
+    "target",
+    [
+        "https://evil.test/b23.tv/abc",
+        "evil.test/b23.tv/abc",
+        "https://b23.tv@evil.test/b23.tv/abc",
+        "https://b23.tv.evil.test/abc",
+        "ftp://b23.tv/abc",
+        "http://127.0.0.1/b23.tv/abc",
+    ],
+)
+def test_bvid_rejects_b23_lookalikes_before_network(monkeypatch, target):
+    monkeypatch.setattr(
+        bilibili.urllib.request,
+        "urlopen",
+        lambda *a, **k: pytest.fail("must not make a request"),
+    )
+
+    with pytest.raises(ReachError) as exc:
+        bilibili._bvid(target, 5)
+    assert exc.value.code == "BAD_INPUT"
 
 
 def test_summary_has_no_live_test():
