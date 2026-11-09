@@ -1,37 +1,167 @@
 {
- "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+ "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
  "release_ready": true,
  "pending": [],
  "waived": [
   {
-   "channel": "reddit",
-   "action": "subreddit",
-   "reason": "Reddit's site tool returns HTML instead of data and subreddit has no public-web route yet; approved to ship untested in 1.6.1"
+   "channel": "bilibili",
+   "action": "summary",
+   "reason": "No summary_api_key on the test machine; approved to ship untested in this release."
   },
   {
-   "channel": "instagram",
+   "channel": "boss",
+   "action": "read",
+   "reason": "No Boss Zhipin login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "boss",
    "action": "search",
-   "reason": "No Instagram login on the test machine; approved to ship untested in 1.6.1"
+   "reason": "No Boss Zhipin login on the test machine; approved to ship untested in this release."
   },
   {
-   "channel": "instagram",
+   "channel": "douyin",
+   "action": "comments",
+   "reason": "The Douyin channel was not added on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "douyin",
+   "action": "read",
+   "reason": "The Douyin channel was not added on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "douyin",
+   "action": "search",
+   "reason": "The Douyin channel was not added on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "facebook",
    "action": "profile",
-   "reason": "No Instagram login on the test machine; approved to ship untested in 1.6.1"
+   "reason": "No Facebook login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "facebook",
+   "action": "search",
+   "reason": "No Facebook login on the test machine; approved to ship untested in this release."
   },
   {
    "channel": "instagram",
    "action": "posts",
-   "reason": "No Instagram login on the test machine; approved to ship untested in 1.6.1"
+   "reason": "No Instagram login on the test machine; approved to ship untested in this release."
   },
   {
-   "channel": "bilibili",
-   "action": "subtitle",
-   "reason": "Upstream QR login saves an empty SESSDATA and the test Chrome has no Bilibili login; approved to ship untested in 1.6.1"
+   "channel": "instagram",
+   "action": "profile",
+   "reason": "No Instagram login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "instagram",
+   "action": "search",
+   "reason": "No Instagram login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "linkedin",
+   "action": "jobs",
+   "reason": "No LinkedIn login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "linkedin",
+   "action": "read",
+   "reason": "No LinkedIn login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "reddit",
+   "action": "read",
+   "reason": "No Reddit login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "reddit",
+   "action": "search",
+   "reason": "No Reddit login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "reddit",
+   "action": "subreddit",
+   "reason": "No Reddit login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "twitter",
+   "action": "profile",
+   "reason": "No X/Twitter login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "twitter",
+   "action": "search",
+   "reason": "No X/Twitter login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "twitter",
+   "action": "thread",
+   "reason": "No X/Twitter login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "twitter",
+   "action": "tweets",
+   "reason": "No X/Twitter login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "xiaohongshu",
+   "action": "comments",
+   "reason": "No Xiaohongshu login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "xiaohongshu",
+   "action": "read",
+   "reason": "No Xiaohongshu login on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "xiaohongshu",
+   "action": "search",
+   "reason": "No Xiaohongshu login on the test machine; approved to ship untested in this release."
   },
   {
    "channel": "xiaoyuzhou",
    "action": "transcribe",
-   "reason": "No Groq key on the test machine; approved to ship untested in 1.6.1"
+   "reason": "No Groq key on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "xueqiu",
+   "action": "hot_posts",
+   "reason": "The Xueqiu channel was not added on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "xueqiu",
+   "action": "hot_stocks",
+   "reason": "The Xueqiu channel was not added on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "xueqiu",
+   "action": "quote",
+   "reason": "The Xueqiu channel was not added on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "xueqiu",
+   "action": "search",
+   "reason": "The Xueqiu channel was not added on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "youtube",
+   "action": "comments",
+   "reason": "YouTube returned a bot-verification challenge on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "youtube",
+   "action": "read",
+   "reason": "YouTube returned a bot-verification challenge on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "youtube",
+   "action": "subtitle",
+   "reason": "YouTube returned a bot-verification challenge on the test machine; approved to ship untested in this release."
+  },
+  {
+   "channel": "youtube",
+   "action": "transcribe",
+   "reason": "No Groq/OpenAI key on the test machine; approved to ship untested in this release."
   }
  ],
  "results": [
@@ -39,11 +169,11 @@
    "channel": "bilibili",
    "action": "hot",
    "method": "real-cli",
-   "backend": "bili-cli",
+   "backend": "bilibili-api",
    "item_count": 2,
-   "at": "2026-11-01T07:17:47.738454+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:28.672856+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
@@ -51,11 +181,11 @@
    "channel": "bilibili",
    "action": "read",
    "method": "real-cli",
-   "backend": "bili-cli",
+   "backend": "bilibili-api",
    "item_count": 1,
-   "at": "2026-11-01T07:17:47.117012+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:28.272147+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
@@ -63,11 +193,11 @@
    "channel": "bilibili",
    "action": "search",
    "method": "real-cli",
-   "backend": "bili-cli",
+   "backend": "native",
    "item_count": 2,
-   "at": "2026-11-01T07:17:46.488151+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:27.873371+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
@@ -75,61 +205,25 @@
    "channel": "bilibili",
    "action": "subtitle",
    "method": "real-cli",
+   "backend": "native",
+   "item_count": 1,
+   "at": "2026-11-09T05:07:29.757704+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
+   "passed": true,
+   "error": null
+  },
+  {
+   "channel": "bilibili",
+   "action": "summary",
+   "method": "real-cli",
    "backend": null,
    "item_count": 0,
-   "at": "2026-11-01T07:17:48.608135+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:30.018943+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": false,
-   "error": "NEED_LOGIN"
-  },
-  {
-   "channel": "boss",
-   "action": "read",
-   "method": "real-cli",
-   "backend": "opencli",
-   "item_count": 1,
-   "at": "2026-11-01T05:34:18.036035+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "boss",
-   "action": "search",
-   "method": "real-cli",
-   "backend": "opencli",
-   "item_count": 3,
-   "at": "2026-11-01T05:34:08.375939+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "facebook",
-   "action": "profile",
-   "method": "real-cli",
-   "backend": "opencli",
-   "item_count": 1,
-   "at": "2026-11-01T05:32:54.874320+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "facebook",
-   "action": "search",
-   "method": "real-cli",
-   "backend": "opencli",
-   "item_count": 1,
-   "at": "2026-11-01T05:32:30.266205+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
+   "error": "NEED_SETUP"
   },
   {
    "channel": "github",
@@ -137,9 +231,9 @@
    "method": "real-cli",
    "backend": "gh",
    "item_count": 1,
-   "at": "2026-11-01T05:29:29.523632+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:16.120691+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
@@ -149,153 +243,9 @@
    "method": "real-cli",
    "backend": "gh",
    "item_count": 2,
-   "at": "2026-11-01T05:29:24.721763+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "instagram",
-   "action": "posts",
-   "method": "real-cli",
-   "backend": null,
-   "item_count": 0,
-   "at": "2026-11-01T05:33:17.040193+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": false,
-   "error": "UPSTREAM_BROKEN"
-  },
-  {
-   "channel": "instagram",
-   "action": "profile",
-   "method": "real-cli",
-   "backend": null,
-   "item_count": 0,
-   "at": "2026-11-01T05:33:12.155525+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": false,
-   "error": "NEED_LOGIN"
-  },
-  {
-   "channel": "instagram",
-   "action": "search",
-   "method": "real-cli",
-   "backend": null,
-   "item_count": 0,
-   "at": "2026-11-01T05:33:07.573176+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": false,
-   "error": "UPSTREAM_BROKEN"
-  },
-  {
-   "channel": "linkedin",
-   "action": "jobs",
-   "method": "real-cli",
-   "backend": "public-web",
-   "item_count": 2,
-   "at": "2026-11-01T07:18:11.539804+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "linkedin",
-   "action": "read",
-   "method": "real-cli",
-   "backend": "public-web",
-   "item_count": 1,
-   "at": "2026-11-01T07:18:35.945756+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "reddit",
-   "action": "read",
-   "method": "real-cli",
-   "backend": "public-web",
-   "item_count": 1,
-   "at": "2026-11-01T05:31:42.692120+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "reddit",
-   "action": "search",
-   "method": "real-cli",
-   "backend": "public-web",
-   "item_count": 2,
-   "at": "2026-11-01T05:31:23.671428+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "reddit",
-   "action": "subreddit",
-   "method": "real-cli",
-   "backend": null,
-   "item_count": 0,
-   "at": "2026-11-01T05:32:06.876655+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": false,
-   "error": "UPSTREAM_BROKEN"
-  },
-  {
-   "channel": "twitter",
-   "action": "profile",
-   "method": "real-cli",
-   "backend": "opencli",
-   "item_count": 1,
-   "at": "2026-11-01T05:30:33.678645+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "twitter",
-   "action": "search",
-   "method": "real-cli",
-   "backend": "opencli",
-   "item_count": 2,
-   "at": "2026-11-01T05:30:06.253306+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "twitter",
-   "action": "thread",
-   "method": "real-cli",
-   "backend": "opencli",
-   "item_count": 39,
-   "at": "2026-11-01T05:30:51.216023+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "twitter",
-   "action": "tweets",
-   "method": "real-cli",
-   "backend": "opencli",
-   "item_count": 2,
-   "at": "2026-11-01T05:30:40.013968+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:13.460384+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
@@ -305,9 +255,9 @@
    "method": "real-cli",
    "backend": "v2ex-api",
    "item_count": 3,
-   "at": "2026-11-01T05:34:20.550389+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:30.849909+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
@@ -317,9 +267,9 @@
    "method": "real-cli",
    "backend": "v2ex-api",
    "item_count": 3,
-   "at": "2026-11-01T05:34:22.281680+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:31.758297+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
@@ -329,9 +279,9 @@
    "method": "real-cli",
    "backend": "v2ex-api",
    "item_count": 1,
-   "at": "2026-11-01T05:34:24.650780+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:33.222447+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
@@ -341,9 +291,9 @@
    "method": "real-cli",
    "backend": "v2ex-api",
    "item_count": 1,
-   "at": "2026-11-01T05:34:25.583403+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:34.850120+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
@@ -353,9 +303,9 @@
    "method": "real-cli",
    "backend": "jina",
    "item_count": 1,
-   "at": "2026-11-01T05:34:31.312448+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:36.876775+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
@@ -365,107 +315,47 @@
    "method": "real-cli",
    "backend": "exa",
    "item_count": 2,
-   "at": "2026-11-01T05:34:29.332951+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:35.935597+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
   {
-   "channel": "xiaohongshu",
+   "channel": "youtube",
+   "action": "channel",
+   "method": "real-cli",
+   "backend": "yt-dlp",
+   "item_count": 2,
+   "at": "2026-11-09T05:07:26.570285+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
+   "passed": true,
+   "error": null
+  },
+  {
+   "channel": "youtube",
    "action": "comments",
    "method": "real-cli",
-   "backend": "opencli",
-   "item_count": 38,
-   "at": "2026-11-01T05:33:41.025098+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "xiaohongshu",
-   "action": "read",
-   "method": "real-cli",
-   "backend": "opencli",
-   "item_count": 1,
-   "at": "2026-11-01T05:33:31.369100+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "xiaohongshu",
-   "action": "search",
-   "method": "real-cli",
-   "backend": "opencli",
-   "item_count": 2,
-   "at": "2026-11-01T05:33:22.982249+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "xueqiu",
-   "action": "hot_posts",
-   "method": "real-cli",
-   "backend": "xueqiu-api",
-   "item_count": 3,
-   "at": "2026-11-01T05:34:27.029179+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "xueqiu",
-   "action": "hot_stocks",
-   "method": "real-cli",
-   "backend": "xueqiu-api",
-   "item_count": 3,
-   "at": "2026-11-01T05:34:27.644728+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "xueqiu",
-   "action": "quote",
-   "method": "real-cli",
-   "backend": "tencent",
-   "item_count": 1,
-   "at": "2026-11-01T05:34:25.862715+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
-  },
-  {
-   "channel": "xueqiu",
-   "action": "search",
-   "method": "real-cli",
-   "backend": "tencent",
-   "item_count": 1,
-   "at": "2026-11-01T05:34:26.217417+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
+   "backend": null,
+   "item_count": 0,
+   "at": "2026-11-09T05:07:24.934363+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
+   "passed": false,
+   "error": "PLATFORM_BLOCKED"
   },
   {
    "channel": "youtube",
    "action": "read",
    "method": "real-cli",
-   "backend": "yt-dlp",
-   "item_count": 1,
-   "at": "2026-11-01T05:30:54.293518+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
+   "backend": null,
+   "item_count": 0,
+   "at": "2026-11-09T05:07:18.386563+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
+   "passed": false,
+   "error": "PLATFORM_BLOCKED"
   },
   {
    "channel": "youtube",
@@ -473,9 +363,9 @@
    "method": "real-cli",
    "backend": "yt-dlp",
    "item_count": 2,
-   "at": "2026-11-01T05:30:58.809998+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
+   "at": "2026-11-09T05:07:20.633466+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
    "passed": true,
    "error": null
   },
@@ -483,25 +373,25 @@
    "channel": "youtube",
    "action": "subtitle",
    "method": "real-cli",
-   "backend": "yt-dlp",
-   "item_count": 1,
-   "at": "2026-11-01T05:31:03.015385+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
+   "backend": null,
+   "item_count": 0,
+   "at": "2026-11-09T05:07:22.765791+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
+   "passed": false,
+   "error": "PLATFORM_BLOCKED"
   },
   {
    "channel": "youtube",
    "action": "transcribe",
    "method": "real-cli",
-   "backend": "whisper",
-   "item_count": 1,
-   "at": "2026-11-01T05:31:15.658356+00:00",
-   "os": "Darwin",
-   "source_sha256": "64d099f734b1c09739b30df348f81d646e82e687b50ccc59dd9c9ba99774f7eb",
-   "passed": true,
-   "error": null
+   "backend": null,
+   "item_count": 0,
+   "at": "2026-11-09T05:07:26.839404+00:00",
+   "os": "Linux",
+   "source_sha256": "0128d2c075ed2b7698bac643d564f76c19756a7a950b03bae2be2a19283f1ae8",
+   "passed": false,
+   "error": "NEED_SETUP"
   }
  ]
 }
