@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  让你的 Agent 直接搜索和阅读 X、Reddit、YouTube、小红书……
+  让你的 Agent 直接搜索和阅读 X、Reddit、YouTube、B站、小红书、抖音……
 </p>
 
 <p align="center">
@@ -31,6 +31,10 @@
 <p align="center">
   💬 有问题、想要新平台、或者想看看别人怎么用？来 <a href="https://discord.gg/FN6hpGrYKg">Discord</a> 聊聊。
 </p>
+
+> **这是 [`Ma0xFly/Agent-Reach`](https://github.com/Ma0xFly/Agent-Reach) fork**，基于
+> [`Panniantong/Agent-Reach`](https://github.com/Panniantong/Agent-Reach) 维护。当前开发版包含
+> 15 个渠道、native 后端和抖音/YouTube 新动作；上游同步、冲突处理见 [Fork 维护](docs/FORK.md)。
 
 ---
 
@@ -70,9 +74,9 @@
 
 Claude Code、Codex、Hermes Agent、OpenClaw 这类 CLI Agent 自带搜索和网页读取，但下面这些它们基本够不着：
 
-- **要登录才能用的功能**：在小红书搜笔记、在 X 查账号动态、读职位详情等。
-- **视频里的内容**：B站和 YouTube 的字幕，以及 YouTube 视频、小宇宙播客的语音转文字。
-- **中文平台**：B站、小红书、V2EX、雪球，通用搜索覆盖很差。
+- **要登录才能用的功能**：在小红书搜笔记、在 X 查账号动态、读 LinkedIn/Boss 职位详情、看雪球热帖。
+- **视频里的内容**：B站和 YouTube 的字幕；YouTube 评论和频道视频列表；抖音视频和评论；YouTube、小宇宙的语音转文字。
+- **中文平台**：B站、小红书、抖音、V2EX、雪球，通用搜索覆盖很差。
 - **干净的结构化数据**：雪球行情、V2EX 帖子和回复、GitHub 仓库和 issue，拿到的是整理好的内容。
 
 Agent Reach 把这些平台背后的工具替你装好、测好，Agent 一条命令就能用：
@@ -83,6 +87,14 @@ agent-reach bilibili search "大模型"           # agent-reach <渠道> <动作
 agent-reach read https://www.v2ex.com/t/123   # 按链接自动选渠道
 ```
 
+### 这个开发版有什么
+
+- **15 个渠道**：5 个默认、6 个可选、4 个实验；每个渠道的完整动作以 `agent-reach channels` 为准。
+- **native 后端**：小红书、B站、抖音都有站内原生实现；这些动作优先走 native，失败再回退到浏览器/CLI，结果里的 `backend` 说明实际由哪条后端回答。
+- **视频动作更全**：B站 AI 总结、YouTube `comments`/`channel`、抖音 `search`/`read`/`comments`。
+- **可维护**：`scripts/new_channel.py` 生成新渠道骨架，`docs/ADD-A-SOURCE.md` 写接入规则，`docs/FORK.md` 维护上游同步。
+- **Agent skill**：`agent-reach setup` 把当前渠道和后端链表铺给 Claude Code、Codex 等 Agent；`agent-reach skill` 用来查看当前放置位置。
+
 ### ✅ 在你用之前，你可能想知道
 
 - **适用于哪些 Agent？** 一切 Agent 都能用。
@@ -92,7 +104,7 @@ agent-reach read https://www.v2ex.com/t/123   # 按链接自动选渠道
 
 ## 支持的平台
 
-下表是当前版本的情况。
+下表是当前开发版的情况；完整动作和参数以 `agent-reach channels` 为准。
 
 | 渠道 | 等级 | 能做什么 | 需要什么 |
 |---|---|---|---|
@@ -110,7 +122,7 @@ agent-reach read https://www.v2ex.com/t/123   # 按链接自动选渠道
 | twitter | 实验 | 搜推文、用户资料、用户推文、读推文串 | 登录 |
 | facebook | 实验 | 搜索、主页资料 | 登录 |
 | instagram | 实验 | 搜用户、主页资料、用户帖子 | 登录 |
-| douyin | 实验 | 搜视频、读视频、看评论 | 本机 MediaCrawler + 抖音登录 |
+| douyin | 实验 | 搜视频、读视频、看评论 | 本机 MediaCrawler；按错误提示在 MediaCrawler 窗口由本人扫码登录 |
 
 - **默认**：装好就能用；不想要也可以去掉，以后更新不会再加回来。
 - **可选**：说一句"帮我加上 XX"就开启，需要的软件会自动装好。
@@ -120,15 +132,20 @@ agent-reach read https://www.v2ex.com/t/123   # 按链接自动选渠道
 
 ## 快速上手
 
-把这句话发给你的 Agent：
+### 从本 fork 安装当前开发版
+
+```bash
+uv tool install "git+https://github.com/Ma0xFly/Agent-Reach.git"
+agent-reach setup
+```
+
+装好后再来一次 `agent-reach doctor --text`，确认每个渠道的本地状态。也可以把下面这句话发给你的 Agent，让它自己看仓库说明安装：
 
 ```
-帮我安装 Agent Reach：https://raw.githubusercontent.com/Panniantong/Agent-Reach/main/docs/install.md
+帮我安装 Agent Reach 的当前开发版：https://github.com/Ma0xFly/Agent-Reach
 ```
 
-无论是安装还是升级，都只需要这一条命令就行了。
-
-剩下的 Agent 自己做完。过程中你可能会被问到：
+过程中你可能会被问到：
 
 - **允许它执行命令**：如果 Agent 说自己不能运行命令，去它的设置里打开"允许执行命令"。
 - **装 uv**：uv 是一个安装命令行程序的小工具，不需要管理员密码。电脑上没有的话 Agent 会先装它，会跟你说一声。
@@ -136,7 +153,9 @@ agent-reach read https://www.v2ex.com/t/123   # 按链接自动选渠道
 
 关于登录：部分平台会直接复用你电脑上已有的登录。想换成某个特定账号（比如小号），跟 Agent 说一声就行。Agent 从不替你登录，也不会要你的密码。
 
-> ⚠️ PyPI 上叫 `agent-reach` 的包不是本项目，请勿从 PyPI 安装，只用 install.md 里的 GitHub 地址。
+> 只想用上游稳定版？[Panniantong/Agent-Reach 的安装说明](docs/install.md)仍然可用，但不包含本 fork 的 native 后端和抖音/YouTube 新动作。
+>
+> ⚠️ PyPI 上叫 `agent-reach` 的包不是本项目，请勿从 PyPI 安装。
 
 ---
 
@@ -148,7 +167,8 @@ Agent Reach 装的所有东西（各渠道的工具、登录、设置）都放�
 
 | 你说 | 它会做什么 |
 |---|---|
-| "看看 Agent Reach 状态" | 告诉你每个渠道现在能不能用，哪些是上次还好、现在坏了 |
+| "看看 Agent Reach 状态" | 告诉你每个渠道现在能不能用，哪些是上次还好、现在坏了；对应 `agent-reach doctor --text` |
+| "实测一下" | 跑 `agent-reach check <渠道> --text`，联网验证声明的动作 |
 | "加上小红书" / "去掉小红书" | 开启并装好它需要的一切 / 关掉它，清掉它的登录和专用工具 |
 | "小红书登录过期了" / "换个账号" / "退出登录" | 打开登录窗口，由你本人登录 / 清掉这个网站的登录 |
 | "升级 Agent Reach" | 一次更新程序和各渠道的工具，并告诉你还需要做什么 |
@@ -163,7 +183,7 @@ Agent Reach 装的所有东西（各渠道的工具、登录、设置）都放�
 
 ### 🔌 每个平台 = 首选 + 备选的有序工具列表
 
-每个平台的每个动作都有一个按顺序尝试的工具列表。比如搜小红书先走原生接口，失败再换浏览器；读 B站视频先试 bilibili-api，再换原生实现，最后 bili-cli；读网页先用 Jina Reader，再用 Exa。
+每个平台的每个动作都有一个按顺序尝试的工具列表。比如小红书 `search`/`read`/`comments` 先走 native，失败再换 OpenCLI 浏览器；B站 `read` 先试 bilibili-api，再换 native，最后 bili-cli；YouTube `comments`/`channel` 走 yt-dlp；抖音三个动作走本机 MediaCrawler。结果里的 `backend` 就是实际回答的那条腿。
 
 ```mermaid
 flowchart LR
@@ -178,6 +198,16 @@ flowchart LR
 
 平台改版、工具失效是常态。换工具只是调整这个列表，Agent 的用法不变。
 
+`NEED_SETUP`、`UPSTREAM_BROKEN`、`TIMEOUT` 会自动尝试下一条后端；`NEED_LOGIN`、`NOT_FOUND`、`BAD_INPUT`、`PLATFORM_BLOCKED`、`RATE_LIMITED`、`BUSY` 是终态，会停止降级。`NEED_SETUP` 只说明当前后端缺依赖或密钥，不代表平台必须登录。
+
+---
+
+## 扩展与维护
+
+- 新增渠道：`python scripts/new_channel.py mysite --host mysite.com`，规则见 [Add a source](docs/ADD-A-SOURCE.md)。
+- 同步上游：`docs/FORK.md` 记录本 fork 改了哪些文件、已知冲突怎么处理；`scripts/upstream-sync.sh` 负责 fetch + `git rebase --rebase-merges` + 全量测试 + 3 条冒烟，**从不 push**。
+- 修改 Agent 行为：源头是仓库里的 `agent_reach/skill/`；改完用 `agent-reach setup` 或 `manage.place_skill()` 重铺，不直接改 `~/.agents` 的副本。
+
 ---
 
 ## 安全性
@@ -185,6 +215,7 @@ flowchart LR
 - **只读**：只搜索和读取，不发帖、不评论、不点赞、不私信。
 - **从不替你登录，也不要你的密码。** 部分平台会复用你电脑上已有的登录（只复制这一个网站，原浏览器不变）；确实需要重新登录时才打开专用窗口，由你本人完成。
 - **专用浏览器只对你这台电脑开放**，别的电脑连不上它。
+- **抖音使用本机 MediaCrawler 自己的 `browser_data` 档案**，不共用专用浏览器；需要登录时由你本人在 MediaCrawler 窗口扫码，Agent 不代登、不输出 Cookie。
 - **建议用小号登录。** 复用过来的通常是主账号，而平台可能限制自动访问的账号。想换成小号，跟 Agent 说一声就行。
 - **Key 不要发在聊天里**：在你自己的终端里运行 `agent-reach configure groq-key` 填写。
 
@@ -196,11 +227,11 @@ flowchart LR
 
 ## ⭐ 为什么值得 Star
 
-这个项目我自己每天在用，所以我会一直维护它。
+Agent Reach 是一个每天都会用到的开源项目，上游和本 fork 会持续维护。
 
-- 有新需求或者大家提了想要的渠道，我会陆续加上
-- 每个渠道我会尽量保证**能用、好用、免费**
-- 平台改了反爬或者 API 变了，我会想办法解决
+- 上游有新渠道或平台修复时，本 fork 按 [Fork 维护](docs/FORK.md) 同步
+- 新渠道按 [Add a source](docs/ADD-A-SOURCE.md) 接入，生成器保证离线测试直接通过
+- 平台改反爬或 API 时，优先调整后端链，不改变 Agent 的用法
 
 Star 一下，下次需要的时候能找到。⭐
 
@@ -208,7 +239,7 @@ Star 一下，下次需要的时候能找到。⭐
 
 ## 致谢
 
-[OpenCLI](https://github.com/jackwener/opencli) · [bili-cli](https://github.com/public-clis/bilibili-cli) · [boss-agent-cli](https://github.com/can4hou6joeng4/boss-agent-cli) · [yt-dlp](https://github.com/yt-dlp/yt-dlp) · [Jina Reader](https://github.com/jina-ai/reader) · [Exa](https://exa.ai)
+[OpenCLI](https://github.com/jackwener/opencli) · [bili-cli](https://github.com/public-clis/bilibili-cli) · [bilibili-api](https://github.com/Nemo2011/bilibili-api) · [boss-agent-cli](https://github.com/can4hou6joeng4/boss-agent-cli) · [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler) · [Spider_XHS](https://github.com/cv-cat/Spider_XHS) · [yt-dlp](https://github.com/yt-dlp/yt-dlp) · [Jina Reader](https://github.com/jina-ai/reader) · [Exa](https://exa.ai)
 
 ## 联系
 
@@ -224,7 +255,7 @@ Star 一下，下次需要的时候能找到。⭐
   <a href="https://discord.gg/FN6hpGrYKg"><img src="https://img.shields.io/badge/Discord-加入社区-5865F2?style=for-the-badge&amp;logo=discord&amp;logoColor=white" alt="加入 Agent Reach Discord 社区"></a>
 </p>
 
-> Bug 反馈和功能请求请用 [GitHub Issues](https://github.com/Panniantong/Agent-Reach/issues)，更容易跟踪。
+> Bug 反馈和功能请求请用 [GitHub Issues](https://github.com/Ma0xFly/Agent-Reach/issues)，更容易跟踪。
 
 ## 防骗提醒
 
