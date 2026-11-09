@@ -28,6 +28,7 @@ English:
 - YouTube：`comments` 用 `--write-comments --write-info-json` 读 info.json，`channel` 用 `--flat-playlist`；comments raw 标 `content_scope` 和 `exhaustive=false`。
 - `agent-reach check` 默认按每个 Action 的 `timeout` 取预算，不再固定 60s。
 - P5：新增 `scripts/new_channel.py`、`docs/ADD-A-SOURCE.md`；生成的 skill 渠道表直接展示真实后端链。
+- P6：新增 `docs/FORK.md`、`scripts/upstream-sync.sh`；同步固定用 `git rebase --rebase-merges`，并跑全量测试与 3 条只读冒烟；演练结果 891 passed。
 
 English (technical):
 
@@ -37,6 +38,7 @@ English (technical):
 - YouTube: `comments` uses `--write-comments --write-info-json` and reads `info.json`; `channel` uses `--flat-playlist`; comment raw data is marked with `content_scope` and `exhaustive=false`.
 - `agent-reach check` now budgets each Action by its own `timeout` instead of a fixed 60s.
 - P5: added `scripts/new_channel.py`, `docs/ADD-A-SOURCE.md`; the rendered skill channel table now shows the real backend chain.
+- P6: added `docs/FORK.md` and `scripts/upstream-sync.sh`; syncing uses `git rebase --rebase-merges`, then the full test suite and three read-only smoke commands (rehearsal: 891 passed).
 
 ## [1.6.1] - 2026-11-01
 

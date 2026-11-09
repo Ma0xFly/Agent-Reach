@@ -30,5 +30,6 @@
 - [README (中文)](https://github.com/Panniantong/Agent-Reach/blob/main/README.md)
 - [README (English)](https://github.com/Panniantong/Agent-Reach/blob/main/docs/README_en.md)
 - [Add a source](docs/ADD-A-SOURCE.md)
+- [Fork maintenance](docs/FORK.md)
 - [Update](https://github.com/Panniantong/Agent-Reach/blob/main/docs/update.md)
 - [Troubleshooting](https://github.com/Panniantong/Agent-Reach/blob/main/docs/troubleshooting.md)

@@ -84,6 +84,21 @@ Paste the `check --text` output into the PR. Also add unit tests under `tests/` 
 
 Every version section in `CHANGELOG.md` starts with a short plain summary for users, in Chinese and in English: what changed for them and anything they must do, in 1 to 4 short points, with no jargon (no file names, commands or internal terms). This text becomes the GitHub release body, which the AI reads from `meta.update.notes` and shows the user when it offers an update. Technical entries follow below the summary.
 
+## Fork maintenance
+
+This repository tracks `Panniantong/Agent-Reach` while keeping the native
+backends and new channel actions listed in [Fork maintenance](docs/FORK.md).
+Never push a branch or open a PR against the upstream repository. Sync with:
+
+```bash
+scripts/upstream-sync.sh --dry-run
+scripts/upstream-sync.sh
+```
+
+The script uses `git rebase --rebase-merges`, runs `pytest -q` and three
+read-only smoke commands, and never pushes. Push only to your own fork after
+reviewing the diff.
+
 ## Releasing (maintainers)
 
 Users install and update from the latest GitHub release, and 1.5 users are sent to `docs/update.md` on `main`, which points to `docs/install.md`, so the merge and the release must land together:
