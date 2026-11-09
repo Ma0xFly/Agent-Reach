@@ -32,6 +32,9 @@ dependencies = [
     "loguru>=0.7",
     "pyyaml>=6.0",
     "yt-dlp[default]==2026.8.19",
+    # yt-dlp's --cookies-from-browser cannot decrypt Chrome/Chromium cookies
+    # without this on Linux; without it YouTube bot-gates every request.
+    "secretstorage>=3.3; sys_platform == 'linux'",
 ]
 
 [project.optional-dependencies]

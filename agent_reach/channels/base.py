@@ -81,6 +81,10 @@ class Channel(ABC):
     logout_keys: Tuple[str, ...] = ()
     #: `agent-reach configure` key the user must provide before the channel works ("" = none).
     needs_key: str = ""
+    #: True when the channel's own backends answer without a browser, so a
+    #: ``login_url`` is only for an optional browser fallback: `add` then installs
+    #: no node/opencli/chrome and does not prepare the shared browser.
+    browser_optional: bool = False
     #: Run login_argv / tool calls with HOME = the session dir. False when the tool
     #: takes an explicit path instead (login_argv may use the `{session}` placeholder).
     session_home: bool = True

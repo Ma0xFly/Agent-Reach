@@ -48,7 +48,7 @@ Boss requires an existing CDP BOSS page. Select it with `browser bind boss http:
 
 LinkedIn/Bilibili preserve existing native sessions. `login CHANNEL --native` explicitly runs their own authentication if necessary. Saved state is not proof of authentication: use `check CHANNEL --search`.
 
-Bilibili native subtitle/summary also accepts `BILI_COOKIE` or the `bili_cookie` config key. The optional `rookiepy` helper can export a Chrome login to `$XDG_DATA_HOME/bili-sub/cookies.json` (default `~/.local/share/bili-sub/cookies.json`); only export your own login and never commit that file. If only bili-cli has a login, native summary can still report `NEED_SETUP`.
+Bilibili native subtitle/summary also accepts `BILI_COOKIE` or the `bili_cookie` config key. The optional `rookiepy` helper can export a Chrome login to `$XDG_DATA_HOME/bili-sub/cookies.json` (default `~/.local/share/bili-sub/cookies.json`); only export your own login and never commit that file. bili-cli was removed from this fork, so there is no `bili` credential file to fall back on — native reads `bilibili_sessdata` / `bili_cookie` from config only.
 
 Search-only acceptance is shown as search_ready, not proof that every action works. PLATFORM_BLOCKED means stop and have the user check the official page. BUSY means another Reach command owns the same browser; schedule later.
 

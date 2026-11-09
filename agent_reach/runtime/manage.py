@@ -108,7 +108,9 @@ def fresh_check(channel: str, check: Optional[dict]) -> bool:
 
 def channel_tools(ch) -> List[str]:
     """Everything `add` installs for the channel, prerequisites first."""
-    names = (["node", "opencli", "chrome"] if _uses_browser(ch) else []) + list(ch.prereqs) + list(ch.tools)
+    browser = [] if getattr(ch, "browser_optional", False) else (
+        ["node", "opencli", "chrome"] if _uses_browser(ch) else [])
+    names = browser + list(ch.prereqs) + list(ch.tools)
     return list(dict.fromkeys(names))
 
 
@@ -264,7 +266,10 @@ def doctor() -> dict:
 
 def _install_channel(ch, *, allow_upgrade: bool = False) -> List[dict]:
     installed = [tools.ensure(t, allow_upgrade=allow_upgrade) for t in channel_tools(ch)]
-    if _uses_browser(ch):
+    # A channel whose backends are all native needs no browser, even when it
+    # declares a login_url for an optional browser fallback. Preparing the
+    # browser here made `add` fail on channels that could already answer.
+    if _uses_browser(ch) and channel_tools(ch):
         from . import browser
         from .browser_binding import exclusive_browser
         with exclusive_browser():  # setup may restart the browser; let running queries finish first

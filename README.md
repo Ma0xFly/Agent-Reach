@@ -1,4 +1,3 @@
-
 <h1 align="center">👁️ Agent Reach</h1>
 
 <p align="center">
@@ -8,64 +7,6 @@
 <p align="center">
   让你的 Agent 直接搜索和阅读 X、Reddit、YouTube、B站、小红书、抖音……
 </p>
-
-<p align="center">
-  <a href="https://trendshift.io/repositories/24387"><img src="https://trendshift.io/api/badge/repositories/24387" alt="Trendshift GitHub Trending #1 Repository of the Day"></a>
-  <a href="https://star-history.com/#Panniantong/Agent-Reach&Date"><img src="https://api.star-history.com/badge?repo=Panniantong/Agent-Reach" alt="Star History Rank" width="196" height="55"></a>
-</p>
-
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-green.svg?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+"></a>
-  <a href="https://github.com/Panniantong/agent-reach/stargazers"><img src="https://img.shields.io/github/stars/Panniantong/agent-reach?style=for-the-badge" alt="GitHub Stars"></a>
-</p>
-
-<p align="center">
-  <a href="#快速上手">快速开始</a> · <a href="docs/README_en.md">English</a>
-</p>
-
-<p align="center">
-  <a href="https://discord.gg/FN6hpGrYKg"><img src="https://img.shields.io/badge/Discord-加入社区-5865F2?style=for-the-badge&amp;logo=discord&amp;logoColor=white" alt="加入 Agent Reach Discord 社区"></a>
-</p>
-
-<p align="center">
-  💬 有问题、想要新平台、或者想看看别人怎么用？来 <a href="https://discord.gg/FN6hpGrYKg">Discord</a> 聊聊。
-</p>
-
-> **这是 [`Ma0xFly/Agent-Reach`](https://github.com/Ma0xFly/Agent-Reach) fork**，基于
-> [`Panniantong/Agent-Reach`](https://github.com/Panniantong/Agent-Reach) 维护。当前开发版包含
-> 15 个渠道、native 后端和抖音/YouTube 新动作；上游同步、冲突处理见 [Fork 维护](docs/FORK.md)。
-
----
-
-## ❤️赞助商
-
-> [想出现在这里？](mailto:pnt01@foxmail.com)
-
-<details>
-<summary>点击展开</summary>
-
-<table>
-<tr>
-<td width="180" align="center"><a href="https://get.brightdata.com/bdenai"><img src="docs/assets/sponsors/brightdata.png" alt="Bright Data 亮数据" width="150"></a></td>
-<td><a href="https://get.brightdata.com/bdenai">Bright Data 亮数据</a> | 全球领先的数据采集基础设施。Scraper Studio 智能爬取器让你用自然语言一键生成爬虫，无需写代码；Unlocker 网站解锁器自动绕过反爬虫机制，轻松采集 Amazon、Google、LinkedIn、TikTok 等复杂网站数据。内置 350+ 现成 API 集成，覆盖电商、社交、搜索、地图等全品类数据源，直接调用开箱即用。1.5 亿+ 全球真实住宅 IP 保障采集稳定性。每月免费 5,000 次请求，<a href="https://get.brightdata.com/bdenai">立即免费注册</a>。</td>
-</tr>
-<tr>
-<td width="180" align="center"><a href="https://www.rapidproxy.io/?ref=pann"><img src="docs/assets/sponsors/rapidproxy.png" alt="Rapidproxy" width="150"></a></td>
-<td><a href="https://www.rapidproxy.io/?ref=pann">RapidProxy</a> 是专为开发者打造的数据采集代理解决方案，提供稳定可靠的住宅代理服务。拥有 9000 万+ 全球住宅 IP，覆盖 200+ 国家和地区，支持智能轮换与精准地理定位，可用于网页抓取、AI 数据采集与训练、SEO 监控、电商数据分析等场景，帮助提升数据采集效率与稳定性。支持 Playwright、Selenium、Puppeteer 等主流自动化框架，流量永久有效，价格低至 $0.55/GB，<a href="https://www.rapidproxy.io/?ref=pann">支持免费测试</a>。</td>
-</tr>
-<tr>
-<td width="180" align="center"><a href="https://www.browseract.ai/Agent"><img src="docs/assets/sponsors/browseract.png" alt="BrowserAct" width="150"></a></td>
-<td><a href="https://www.browseract.ai/Agent">BrowserAct</a> 支持从 Amazon、LinkedIn、X、Google Maps 等复杂网站提取你需要的任意数据。你只需用自然语言描述抓取需求，Agent 就会基于真实浏览器自动探索并测试页面流程，生成可靠、可复用的数据采集 Bot，并返回结构化结果。无需手动构建爬虫，无需编写代码。BrowserAct 内置隐身浏览、验证码处理和高质量住宅代理，帮助你更稳定地完成复杂网页数据采集。新用户注册即送 1000 积分，<a href="https://www.browseract.ai/Agent">立即免费试用</a>。</td>
-</tr>
-<tr>
-<td width="180" align="center"><a href="https://www.tencentcloud.com/act/pro/intl-openclaw?referral_code=G76Y819A&amp;lang=zh&amp;pg="><img src="docs/assets/sponsors/tencent-cloud.svg" alt="腾讯云 OpenClaw" width="150"></a></td>
-<td>在腾讯云 Lighthouse 秒级部署 OpenClaw 全能助手，可通过对话丝滑接入 Agent Reach，给你的 OpenClaw 一键装上互联网能力。</td>
-</tr>
-</table>
-
-</details>
-
 ---
 
 ## 为什么需要 Agent Reach？
@@ -79,7 +20,7 @@ Claude Code、Codex、Hermes Agent、OpenClaw 这类 CLI Agent 自带搜索和�
 - **中文平台**：B站、小红书、抖音、V2EX、雪球，通用搜索覆盖很差。
 - **干净的结构化数据**：雪球行情、V2EX 帖子和回复、GitHub 仓库和 issue，拿到的是整理好的内容。
 
-Agent Reach 把这些平台背后的工具替你装好、测好，Agent 一条命令就能用：
+一条命令就能用：
 
 ```bash
 agent-reach channels                          # 有哪些渠道、每个渠道能做什么
@@ -90,15 +31,15 @@ agent-reach read https://www.v2ex.com/t/123   # 按链接自动选渠道
 ### 这个开发版有什么
 
 - **15 个渠道**：5 个默认、6 个可选、4 个实验；每个渠道的完整动作以 `agent-reach channels` 为准。
-- **native 后端**：小红书、B站、抖音都有站内原生实现；这些动作优先走 native，失败再回退到浏览器/CLI，结果里的 `backend` 说明实际由哪条后端回答。
+- **native 后端**：小红书、B站、抖音都有站内原生实现（**B站连三方 CLI 都不需要了**），失败再回退到浏览器或公共 API，结果里的 `backend` 说明实际由哪条腿回答。
 - **视频动作更全**：B站 AI 总结、YouTube `comments`/`channel`、抖音 `search`/`read`/`comments`。
+- **单一实现**：自己的脚本搬进仓库（`agent_reach/native/`），第三方项目本体放在 `vendor/`，旧路径留软链和 shim，所以「一份代码、一处修改」。
 - **可维护**：`scripts/new_channel.py` 生成新渠道骨架，`docs/ADD-A-SOURCE.md` 写接入规则，`docs/FORK.md` 维护上游同步。
-- **Agent skill**：`agent-reach setup` 把当前渠道和后端链表铺给 Claude Code、Codex 等 Agent；`agent-reach skill` 用来查看当前放置位置。
 
 ### ✅ 在你用之前，你可能想知道
 
 - **适用于哪些 Agent？** 一切 Agent 都能用。
-- **会碰我的浏览器和账号吗？** 要登录的平台用 Agent Reach 自己的专用浏览器，在后台运行、不弹窗。第一次用某个网站时，会把你 Chrome 里这个网站的登录复制一份过去，原浏览器不变，不读密码库。复制过来的通常是主账号，建议换成小号，做法见下面的"安全性"。详见[会话配置](agent_reach/skill/references/sessions.md)。
+- **会碰我的浏览器和账号吗？** 只有需要登录的**可选/实验**渠道才用 Agent Reach 自己的专用浏览器，后台运行、不弹窗。B站、小红书、YouTube 的 native 路线**不开浏览器**，只用你在配置里给的 Cookie。复制登录时只复制那一个网站，原浏览器不变，不读密码库。详见[会话配置](agent_reach/skill/references/sessions.md)。
 
 ---
 
@@ -108,12 +49,12 @@ agent-reach read https://www.v2ex.com/t/123   # 按链接自动选渠道
 
 | 渠道 | 等级 | 能做什么 | 需要什么 |
 |---|---|---|---|
-| bilibili | 默认 | 搜索、视频信息、热门、字幕、AI 总结 | 无；字幕需要登录（扫码）；总结需要 summary_api_key |
+| bilibili | 默认 | 搜索、视频信息、热门、字幕（可挑 P / 语言）、AI 总结 | 无。字幕要登录就填 `bilibili_sessdata` |
 | v2ex | 默认 | 热门、节点、帖子和回复、用户 | 无 |
-| github | 默认 | 搜仓库、读仓库/README、读 issue 和 PR（含评论） | 无 |
-| youtube | 默认 | 视频信息、搜索、字幕、评论、频道视频列表、语音转文字 | 无；转文字需要 Groq 或 OpenAI Key |
-| web | 默认 | 网页搜索、网页阅读（保底） | 无 |
-| xiaohongshu | 可选 | 搜笔记、读正文、看评论 | 登录；优先原生接口，失败时走浏览器 |
+| github | 默认 | 搜仓库、读仓库/README、读 issue 和 PR（含评论） | 无；配 token 可免 API 限流 |
+| youtube | 默认 | 视频信息、搜索、字幕、评论、频道视频列表、语音转文字 | 无。匿名 IP 被 bot gate 时会自动借 Chrome cookie（需 `secretstorage`）；转文字需要 Groq 或 OpenAI Key |
+| web | 默认 | 网页搜索、网页阅读（保底） | 无；Jina 阅读器现在要 Key，没有就走 Exa |
+| xiaohongshu | 可选 | 搜笔记、读正文、看评论 | `xhs_cookie` + 本机 Spider_XHS；不用浏览器。opencli 只是降级腿 |
 | xueqiu | 可选 | 实时行情、搜股票、热帖、热股 | 行情不用登录；热帖、热股要登录 |
 | boss | 可选 | 搜职位和 JD | 登录 |
 | xiaoyuzhou | 可选 | 播客转文字 | Groq Key |
@@ -125,57 +66,144 @@ agent-reach read https://www.v2ex.com/t/123   # 按链接自动选渠道
 | douyin | 实验 | 搜视频、读视频、看评论 | 本机 MediaCrawler；按错误提示在 MediaCrawler 窗口由本人扫码登录 |
 
 - **默认**：装好就能用；不想要也可以去掉，以后更新不会再加回来。
-- **可选**：说一句"帮我加上 XX"就开启，需要的软件会自动装好。
+- **可选**：说一句"帮我加上 XX"就开启。
 - **实验**：能用，但平台反爬更严，可能随时失效。
 
 ---
 
-## 快速上手
+## 本地开发安装（这台机器上）
 
-### 从本 fork 安装当前开发版
+`vendor/` 里的第三方项目本体**不进 git**（1.2GB，其中 1.05GB 是 venv），所以本地装法如下：
 
 ```bash
-uv tool install "git+https://github.com/Ma0xFly/Agent-Reach.git"
-agent-reach setup
+cd ~/Projects/Agent-Reach
+
+# 1. Python 环境（uv 建的 venv 没有 pip，后面用 uv pip）
+uv venv --python 3.12
+uv pip install -e ".[dev]"
+
+# 2. 第三方本体放到位（只做一次；旧路径已经是指向这里的软链）
+ls vendor/Spider_XHS vendor/MediaCrawler
+
+# 3. 把命令挂到 PATH
+ln -sfn "$PWD/.venv/bin/agent-reach" ~/.local/bin/agent-reach
+
+# 4. 冒烟
+agent-reach version
+agent-reach doctor --text
+agent-reach check bilibili
 ```
 
-装好后再来一次 `agent-reach doctor --text`，确认每个渠道的本地状态。也可以把下面这句话发给你的 Agent，让它自己看仓库说明安装：
+配置都在一个文件：`~/.agent-reach/config.yaml`。常用键：
+
+| 键 | 用途 |
+|---|---|
+| `xhs_cookie` | 小红书（a1 + web_session） |
+| `bilibili_sessdata` / `bilibili_csrf` | B站字幕需要的登录态；不填则尝试复用 Chrome（要装 `rookiepy`） |
+| `summary_api_key` / `summary_base_url` / `summary_model` | B站 AI 总结（任何 OpenAI 兼容端点） |
+| `proxy` | 默认 `http://127.0.0.1:7897` |
+| `yt_cookies_browser` | YouTube bot gate 时借哪个浏览器的 cookie，默认 `chrome`；设 `off` 关闭 |
+| `xhs_python` / `xhs_spider_dir` | 覆盖 Spider_XHS 的解释器与目录 |
+
+> 只想装给别人用、不需要本地改代码？`uv tool install "git+https://github.com/Ma0xFly/Agent-Reach.git"` 然后 `agent-reach setup`。但这条路拿不到 `vendor/`，native 小红书/抖音需要你自己放这两个项目。
+
+---
+
+## CLI 怎么用
+
+**输出永远是 JSON**（给 Agent 用）。人在终端里看，加 `--text` 换成表格。
+
+```bash
+agent-reach <渠道> <动作> [参数]        # 主体形态
+agent-reach read <url>                 # 按域名自动挑渠道
+agent-reach channels                   # 渠道 / 动作 / 参数清单
+agent-reach doctor [--text]            # 本地状态（不联网）
+agent-reach check [渠道] [--text]      # 联网实测每个动作
+```
+
+四个平台的常用命令：
+
+```bash
+# B站：搜索 / 视频信息 / 热门 / 字幕（挑 P 和语言）/ AI 总结
+agent-reach bilibili search "车联网" --limit 5
+agent-reach bilibili read BV1hL4y1E7A1
+agent-reach bilibili subtitle BV1hL4y1E7A1 --part 2 --language ai-en --timestamps false
+agent-reach bilibili summary BV1hL4y1E7A1 --model deepseek/deepseek-v4-flash
+
+# 小红书：搜索 / 正文 / 评论（内置 35s 防风控节流，连续调用会自动等）
+agent-reach xiaohongshu search "车联网安全" --limit 5
+agent-reach xiaohongshu read "https://www.xiaohongshu.com/explore/<id>?xsec_token=<token>"
+agent-reach xiaohongshu comments "https://www.xiaohongshu.com/explore/<id>?xsec_token=<token>" --limit 10
+
+# 抖音：搜索 / 视频 / 评论
+agent-reach douyin search "小米汽车" --limit 5
+agent-reach douyin read "<视频链接>"
+
+# YouTube：信息 / 搜索 / 字幕 / 评论 / 频道列表
+agent-reach youtube search "车联网 security" --limit 5
+agent-reach youtube subtitle jNQXAC9IVRw --lang zh-Hans,zh,en
+agent-reach youtube comments jNQXAC9IVRw --limit 20
+agent-reach youtube channel @veritasium --limit 10
+```
+
+**指定某条腿**（排错时用）：
+
+```bash
+agent-reach xiaohongshu search "关键词" --backend native
+agent-reach bilibili read BV1hL4y1E7A1 --backend bilibili-api
+```
+
+返回长这样，`backend` 就是实际回答的那条腿：
+
+```json
+{"schema_version": 1, "ok": true, "channel": "bilibili", "action": "subtitle",
+ "backend": "native", "items": [{"title": "...", "url": "...", "text": "字幕正文", "raw": {...}}],
+ "meta": {"elapsed_ms": 699, "attempts": [{"backend": "native", "result": "ok"}]}, "error": null}
+```
+
+失败时 `ok: false`，`error.code` 是下面之一：
+
+| 码 | 意思 | 会不会自动换下一条腿 |
+|---|---|---|
+| `NEED_SETUP` | 缺依赖/密钥，不是平台问题 | ✅ 换 |
+| `UPSTREAM_BROKEN` | 这条腿暂时不工作 | ✅ 换 |
+| `TIMEOUT` | 超时 | ✅ 换（并把这条腿暂停 60–120s） |
+| `NEED_LOGIN` | 需要登录 | ❌ 停，告诉你怎么登 |
+| `NOT_FOUND` / `BAD_INPUT` | 没这条内容 / 参数不对 | ❌ 停 |
+| `PLATFORM_BLOCKED` | 平台风控/验证 | ❌ 停，别循环重试 |
+| `RATE_LIMITED` | 平台限流 | ❌ 停，这个渠道冷却 1 小时 |
+
+---
+
+## 本 fork 的结构
 
 ```
-帮我安装 Agent Reach 的当前开发版：https://github.com/Ma0xFly/Agent-Reach
+agent_reach/
+├── channels/      # 每个平台一个文件：动作 + 有序后端链（声明式）
+├── native/        # 自己的实现：bilibili(WBI/字幕/总结) · xhs(Spider_XHS 壳) · douyin(MediaCrawler 壳)
+├── backends/      # 上游的 opencli / cloak / boss
+└── runtime/       # 调度、降级、错误码、状态、浏览器
+vendor/            # 第三方本体（gitignore）：Spider_XHS · MediaCrawler
+docs/              # ADD-A-SOURCE（怎么加源）· FORK（改了上游哪些文件）· troubleshooting
 ```
 
-过程中你可能会被问到：
-
-- **允许它执行命令**：如果 Agent 说自己不能运行命令，去它的设置里打开"允许执行命令"。
-- **装 uv**：uv 是一个安装命令行程序的小工具，不需要管理员密码。电脑上没有的话 Agent 会先装它，会跟你说一声。
-- **要不要加可选渠道**：装完后 Agent 会告诉你哪些已经能用（B站、V2EX、GitHub、YouTube、网页），以及还能加哪些。你选了再加，也可以以后随时说"帮我加上小红书"，一条命令就装好。
-
-关于登录：部分平台会直接复用你电脑上已有的登录。想换成某个特定账号（比如小号），跟 Agent 说一声就行。Agent 从不替你登录，也不会要你的密码。
-
-> 只想用上游稳定版？[Panniantong/Agent-Reach 的安装说明](docs/install.md)仍然可用，但不包含本 fork 的 native 后端和抖音/YouTube 新动作。
->
-> ⚠️ PyPI 上叫 `agent-reach` 的包不是本项目，请勿从 PyPI 安装。
+旧的 `~/.local/bin/bilibili_subtitle.py` 现在只是 24 行 shim，真正的代码在 `agent_reach/native/bilibili.py`；`~/Projects/Spider_XHS/xhs_api.py` 仍是独立入口（三个 skill 依赖它的 JSON 结构），新代码请优先用 `agent-reach xiaohongshu`。
 
 ---
 
 ## 装好之后怎么管
 
-Agent Reach 装的所有东西（各渠道的工具、登录、设置）都放在你电脑上同一个文件夹里（`~/.agent-reach/`），不散落到别处。所以升级、管理、删除都很省事，一句话就行。
-
-直接用大白话跟 Agent 说：
+Agent Reach 装的东西都在 `~/.agent-reach/`，不散落到别处。直接用大白话跟 Agent 说：
 
 | 你说 | 它会做什么 |
 |---|---|
-| "看看 Agent Reach 状态" | 告诉你每个渠道现在能不能用，哪些是上次还好、现在坏了；对应 `agent-reach doctor --text` |
-| "实测一下" | 跑 `agent-reach check <渠道> --text`，联网验证声明的动作 |
-| "加上小红书" / "去掉小红书" | 开启并装好它需要的一切 / 关掉它，清掉它的登录和专用工具 |
-| "小红书登录过期了" / "换个账号" / "退出登录" | 打开登录窗口，由你本人登录 / 清掉这个网站的登录 |
-| "升级 Agent Reach" | 一次更新程序和各渠道的工具，并告诉你还需要做什么 |
+| "看看 Agent Reach 状态" | 每个渠道能不能用、哪些上次还好现在坏了；`agent-reach doctor --text` |
+| "实测一下" | `agent-reach check <渠道> --text`，联网验证每个动作 |
+| "加上小红书" / "去掉小红书" | 开启并装好 / 关掉它，清掉它的登录和专用工具 |
+| "小红书登录过期了" | 换 Cookie：更新 `~/.agent-reach/config.yaml` 的 `xhs_cookie` |
+| "升级 Agent Reach" | 更新程序和各渠道工具，并告诉你还需要做什么 |
 | "卸载 Agent Reach" | 先列出要删的东西，你确认后再删 |
-| "让另一个 AI 也能用" | 给那个 AI 也放一份使用说明 |
-
-出了问题，Agent 会告诉你是哪个平台、什么原因、下一步怎么做。常见问题见 [troubleshooting.md](docs/troubleshooting.md)。
+| "让另一个 AI 也能用" | 给那个 AI 也放一份使用说明（`agent-reach skill`） |
 
 ---
 
@@ -183,14 +211,14 @@ Agent Reach 装的所有东西（各渠道的工具、登录、设置）都放�
 
 ### 🔌 每个平台 = 首选 + 备选的有序工具列表
 
-每个平台的每个动作都有一个按顺序尝试的工具列表。比如小红书 `search`/`read`/`comments` 先走 native，失败再换 OpenCLI 浏览器；B站 `read` 先试 bilibili-api，再换 native，最后 bili-cli；YouTube `comments`/`channel` 走 yt-dlp；抖音三个动作走本机 MediaCrawler。结果里的 `backend` 就是实际回答的那条腿。
+每个动作都有一串按顺序尝试的腿。比如小红书 `search`/`read`/`comments` 先走 native，失败再换 OpenCLI 浏览器；B站 `read` 先试 bilibili-api，再换 native；YouTube `comments`/`channel` 走 yt-dlp；抖音三个动作走本机 MediaCrawler。结果里的 `backend` 就是实际回答的那条腿。
 
 ```mermaid
 flowchart LR
     A[Agent] -->|agent-reach 渠道 动作| B[Agent Reach]
     B --> C{按顺序尝试}
-    C -->|首选| D[上游工具 1]
-    C -->|失败时备选| E[上游工具 2]
+    C -->|首选| D[后端 1]
+    C -->|失败时备选| E[后端 2]
     D --> F[结果]
     E --> F
     F --> A
@@ -198,14 +226,12 @@ flowchart LR
 
 平台改版、工具失效是常态。换工具只是调整这个列表，Agent 的用法不变。
 
-`NEED_SETUP`、`UPSTREAM_BROKEN`、`TIMEOUT` 会自动尝试下一条后端；`NEED_LOGIN`、`NOT_FOUND`、`BAD_INPUT`、`PLATFORM_BLOCKED`、`RATE_LIMITED`、`BUSY` 是终态，会停止降级。`NEED_SETUP` 只说明当前后端缺依赖或密钥，不代表平台必须登录。
-
 ---
 
 ## 扩展与维护
 
 - 新增渠道：`python scripts/new_channel.py mysite --host mysite.com`，规则见 [Add a source](docs/ADD-A-SOURCE.md)。
-- 同步上游：`docs/FORK.md` 记录本 fork 改了哪些文件、已知冲突怎么处理；`scripts/upstream-sync.sh` 负责 fetch + `git rebase --rebase-merges` + 全量测试 + 3 条冒烟，**从不 push**。
+- 同步上游：`docs/FORK.md` 记录本 fork 改了哪些文件、冲突怎么处理；`scripts/upstream-sync.sh` 负责 fetch + rebase + 全量测试 + 冒烟，**从不 push**。
 - 修改 Agent 行为：源头是仓库里的 `agent_reach/skill/`；改完用 `agent-reach setup` 或 `manage.place_skill()` 重铺，不直接改 `~/.agents` 的副本。
 
 ---
@@ -213,10 +239,10 @@ flowchart LR
 ## 安全性
 
 - **只读**：只搜索和读取，不发帖、不评论、不点赞、不私信。
-- **从不替你登录，也不要你的密码。** 部分平台会复用你电脑上已有的登录（只复制这一个网站，原浏览器不变）；确实需要重新登录时才打开专用窗口，由你本人完成。
+- **从不替你登录，也不要你的密码。** native 路线只读你自己在 `config.yaml` 里写的 Cookie 或本机 Chrome 的登录；要重新登录时才打开专用窗口，由你本人完成。
 - **专用浏览器只对你这台电脑开放**，别的电脑连不上它。
 - **抖音使用本机 MediaCrawler 自己的 `browser_data` 档案**，不共用专用浏览器；需要登录时由你本人在 MediaCrawler 窗口扫码，Agent 不代登、不输出 Cookie。
-- **建议用小号登录。** 复用过来的通常是主账号，而平台可能限制自动访问的账号。想换成小号，跟 Agent 说一声就行。
+- **建议用小号登录。** 复用过来的通常是主账号，平台可能限制自动访问的账号。
 - **Key 不要发在聊天里**：在你自己的终端里运行 `agent-reach configure groq-key` 填写。
 
 ### 🗑️ 卸载
@@ -224,53 +250,3 @@ flowchart LR
 跟 Agent 说"卸载 Agent Reach"。它会先列出要删的东西，你确认后再删。只删 Agent Reach 自己装的东西，你的其他文件和浏览器都不动。最后它会告诉你怎么删掉程序本身。
 
 ---
-
-## ⭐ 为什么值得 Star
-
-Agent Reach 是一个每天都会用到的开源项目，上游和本 fork 会持续维护。
-
-- 上游有新渠道或平台修复时，本 fork 按 [Fork 维护](docs/FORK.md) 同步
-- 新渠道按 [Add a source](docs/ADD-A-SOURCE.md) 接入，生成器保证离线测试直接通过
-- 平台改反爬或 API 时，优先调整后端链，不改变 Agent 的用法
-
-Star 一下，下次需要的时候能找到。⭐
-
----
-
-## 致谢
-
-[OpenCLI](https://github.com/jackwener/opencli) · [bili-cli](https://github.com/public-clis/bilibili-cli) · [bilibili-api](https://github.com/Nemo2011/bilibili-api) · [boss-agent-cli](https://github.com/can4hou6joeng4/boss-agent-cli) · [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler) · [Spider_XHS](https://github.com/cv-cat/Spider_XHS) · [yt-dlp](https://github.com/yt-dlp/yt-dlp) · [Jina Reader](https://github.com/jina-ai/reader) · [Exa](https://exa.ai)
-
-## 联系
-
-- 📧 **Email:** pnt01@foxmail.com
-
-## 业务合作 / 交流群
-
-有相关合作，或者想加交流群，加我微信，或直接加入 Discord 社区：
-
-<p align="center">
-  <img src="docs/wechat-group-qr.jpg" width="280" alt="WeChat QR">
-  &nbsp;&nbsp;
-  <a href="https://discord.gg/FN6hpGrYKg"><img src="https://img.shields.io/badge/Discord-加入社区-5865F2?style=for-the-badge&amp;logo=discord&amp;logoColor=white" alt="加入 Agent Reach Discord 社区"></a>
-</p>
-
-> Bug 反馈和功能请求请用 [GitHub Issues](https://github.com/Ma0xFly/Agent-Reach/issues)，更容易跟踪。
-
-## 防骗提醒
-
-Agent Reach 没有官方代币、币、投资产品、领取手续费活动、钱包连接，也没有 Solana/Pump.fun 项目。任何借用 Agent Reach 名字、GitHub 地址或作者身份的加密项目都与本仓库无关，请勿据此连接钱包或领取任何费用。
-
-## License
-
-[MIT](LICENSE)
-
-## 友情链接
-
-[Agent Skills Hub](https://agentskillshub.top/) — 找 Claude 技能和 MCP 服务器，不用猜哪个安全：133,000+ 个条目全部安全分级、质量评分，每 8 小时刷新。
-
-[AtomGit 镜像](https://atomgit.com/qq_51337814/Agent-Reach) — Agent Reach 的 AtomGit 同步镜像，便于国内访问与克隆。
-
-## Star History
-
-<a href="https://www.star-history.com/?type=date&repos=Panniantong%2FAgent-Reach"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Panniantong/Agent-Reach&type=date&theme=dark&legend=top-left&sealed_token=K3_u-LJQTVURYu-38Tqa_VWJOSqMf_HbAw-QKSdGwEq6seqznugdIpXdSeztEdOutT40IBXwVxTmg8wS_OSygb5UWf1x8e-Fai6aygrjq6QH8vU09EcqQCN7atp-76HmxX-j9fnZ9NiSrLDNzK98TnXBFJ_Wb_y80I0nWr3O8DdGnLXFhAJgoNK3Jz8D" /><source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Panniantong/Agent-Reach&type=date&legend=top-left&sealed_token=P2746KOq7grpS8Q-nrqEzci1-Z0-dOw-M3KEqju-l3TyF24NMyRDR7TnxdReJWlXyomoT4mjjqC28-2-c2G6CnzmS1hgYdEDiGPmLkmEqKP5tgjORXshdrUFxoSxTqmIKEMFFmGZUX1v3ec-q_XMyftTVWzluiQH7CvKoZ1uDKU3PJN05mO22u7qlLeG" /><img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Panniantong/Agent-Reach&type=date&legend=top-left&sealed_token=P2746KOq7grpS8Q-nrqEzci1-Z0-dOw-M3KEqju-l3TyF24NMyRDR7TnxdReJWlXyomoT4mjjqC28-2-c2G6CnzmS1hgYdEDiGPmLkmEqKP5tgjORXshdrUFxoSxTqmIKEMFFmGZUX1v3ec-q_XMyftTVWzluiQH7CvKoZ1uDKU3PJN05mO22u7qlLeG" /></picture></a>

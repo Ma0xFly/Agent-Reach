@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Bilibili channel wiring: native chains, fallback, subtitle params, setup problems."""
+"""Bilibili channel wiring: native chains, public-API fallback, subtitle params.
 
-import inspect
+bili-cli was removed from this fork: every action is answered by `native` or by
+the plain-HTTP `bilibili-api` fallback. These tests pin that, so a future merge
+from upstream cannot quietly reintroduce a third-party CLI dependency.
+"""
 
 import pytest
 
@@ -11,6 +14,7 @@ from agent_reach.runtime.dispatch import run_action
 from agent_reach.runtime.result import ReachError
 
 BV = "BV1GJ411x7h7"
+ALLOWED_BACKENDS = {"native", "bilibili-api"}
 
 
 def _channel():
@@ -22,24 +26,24 @@ def _action(name):
 
 
 def test_backend_chains_match_the_plan():
-    assert _action("search").backends == (
-        ("native", "_native_search"),
-        ("bili-cli", "_cli_search"),
-    )
+    assert _action("search").backends == (("native", "_native_search"),)
     assert _action("read").backends == (
         ("bilibili-api", "_api_read"),
         ("native", "_native_read"),
-        ("bili-cli", "_cli_read"),
     )
-    assert _action("subtitle").backends == (
-        ("native", "_native_subtitle"),
-        ("bili-cli", "_cli_subtitle"),
-    )
+    assert _action("hot").backends == (("bilibili-api", "_api_hot"),)
+    assert _action("subtitle").backends == (("native", "_native_subtitle"),)
     assert _action("summary").backends == (("native", "_native_summary"),)
-    assert _action("hot").backends == (
-        ("bili-cli", "_cli_hot"),
-        ("bilibili-api", "_api_hot"),
-    )
+
+
+def test_no_third_party_cli_backend_remains():
+    for action in bilibili.BilibiliChannel.actions:
+        for label, method in action.backends:
+            assert label in ALLOWED_BACKENDS, f"{action.name} still uses {label}"
+            assert callable(getattr(bilibili.BilibiliChannel, method, None))
+    assert bilibili.BilibiliChannel.tools == ()
+    assert bilibili.BilibiliChannel.session == ""
+    assert bilibili.BilibiliChannel.login_argv == ()
 
 
 def test_subtitle_declares_part_language_and_timestamps():
@@ -105,12 +109,6 @@ def test_summary_has_no_live_test():
     assert _action("summary").live_test is None
 
 
-def test_cli_subtitle_signature_accepts_new_params():
-    signature = inspect.signature(bilibili.BilibiliChannel._cli_subtitle)
-    for name in ("target", "part", "language", "timestamps", "timeout"):
-        assert name in signature.parameters
-
-
 def test_search_native_only(monkeypatch):
     monkeypatch.setattr(native, "search", lambda query, limit, timeout: [{"title": query}])
     out = run_action(_channel(), "search", {"query": "Python", "limit": 2}, only_backend="native")
@@ -119,61 +117,51 @@ def test_search_native_only(monkeypatch):
     assert out["items"] == [{"title": "Python"}]
 
 
-def test_search_falls_back_to_bili_cli(monkeypatch):
+def test_search_has_no_fallback_so_a_native_failure_is_reported(monkeypatch):
     def broken(**kwargs):
         raise ReachError("UPSTREAM_BROKEN", "wbi failed")
 
     monkeypatch.setattr(native, "search", broken)
-    monkeypatch.setattr(
-        bilibili,
-        "_bili_json",
-        lambda args, timeout: [{"bvid": BV, "title": "来自 bili-cli", "owner": {"name": "UP"}}],
-    )
     out = run_action(_channel(), "search", {"query": "Python", "limit": 3})
-    assert out["ok"] is True
-    assert out["backend"] == "bili-cli"
-    assert [a["backend"] for a in out["meta"]["attempts"]] == ["native", "bili-cli"]
+    assert out["ok"] is False
+    assert out["error"]["code"] == "UPSTREAM_BROKEN"
+    assert [a["backend"] for a in out["meta"]["attempts"]] == ["native"]
 
 
-def test_read_404_stops_before_bili_cli(monkeypatch):
-    bili_calls = []
+def test_read_404_stops_before_native(monkeypatch):
+    def api_not_found(path, timeout):
+        raise ReachError("NOT_FOUND", "video not found")
 
-    def api_broken(path, timeout):
-        raise ReachError("UPSTREAM_BROKEN", "api unavailable")
-
-    monkeypatch.setattr(bilibili, "_bili_api", api_broken)
-    monkeypatch.setattr(native, "read", lambda target, timeout: _raise("NOT_FOUND"))
-    monkeypatch.setattr(bilibili, "_bili_json", lambda args, timeout: bili_calls.append(args))
+    monkeypatch.setattr(bilibili, "_bili_api", api_not_found)
+    monkeypatch.setattr(native, "read", lambda target, timeout: pytest.fail("native must not run"))
 
     out = run_action(_channel(), "read", {"target": BV})
     assert out["ok"] is False
     assert out["error"]["code"] == "NOT_FOUND"
-    assert bili_calls == []
+    assert [a["backend"] for a in out["meta"]["attempts"]] == ["bilibili-api"]
 
 
-def _raise(code):
-    raise ReachError(code, code.lower())
-
-
-def test_read_falls_back_native_then_bili_cli(monkeypatch):
+def test_read_falls_back_from_api_to_native(monkeypatch):
     def api_broken(path, timeout):
         raise ReachError("UPSTREAM_BROKEN", "api unavailable")
 
     monkeypatch.setattr(bilibili, "_bili_api", api_broken)
-    monkeypatch.setattr(native, "read", lambda target, timeout: _raise("TIMEOUT"))
-    monkeypatch.setattr(
-        bilibili,
-        "_bili_json",
-        lambda args, timeout: {"video": {"bvid": BV, "title": "cli", "owner": {"name": "UP"}}},
-    )
+    monkeypatch.setattr(native, "read", lambda target, timeout: [{"title": "native"}])
     out = run_action(_channel(), "read", {"target": BV})
     assert out["ok"] is True
-    assert out["backend"] == "bili-cli"
-    assert [a["backend"] for a in out["meta"]["attempts"]] == [
-        "bilibili-api",
-        "native",
-        "bili-cli",
-    ]
+    assert out["backend"] == "native"
+    assert [a["backend"] for a in out["meta"]["attempts"]] == ["bilibili-api", "native"]
+
+
+def test_hot_uses_the_public_api_only(monkeypatch):
+    monkeypatch.setattr(
+        bilibili,
+        "_bili_api",
+        lambda path, timeout: {"list": [{"bvid": BV, "title": "hot"}]},
+    )
+    out = run_action(_channel(), "hot", {"limit": 2})
+    assert out["ok"] is True
+    assert out["backend"] == "bilibili-api"
 
 
 def test_native_subtitle_receives_part_language_and_timestamps(monkeypatch):
@@ -194,57 +182,14 @@ def test_native_subtitle_receives_part_language_and_timestamps(monkeypatch):
     assert seen == {"target": BV, "part": 2, "language": "ai-en", "timestamps": "false"}
 
 
-def test_subtitle_falls_back_to_bili_cli_for_default_params(monkeypatch):
-    monkeypatch.setattr(native, "subtitle", lambda **kwargs: _raise("NEED_SETUP"))
-    monkeypatch.setattr(bilibili, "_reuse_subtitle_login", lambda timeout: None)
-    monkeypatch.setattr(
-        bilibili,
-        "_bili_json",
-        lambda args, timeout: {
-            "subtitle": {"available": True, "text": "bili-cli 字幕"},
-            "video": {"bvid": BV, "title": "T", "owner": {"name": "UP"}},
-        },
-    )
+def test_subtitle_failure_is_reported_without_a_cli_fallback(monkeypatch):
+    monkeypatch.setattr(native, "subtitle", lambda **kwargs: _raise("NEED_LOGIN"))
     out = run_action(
         _channel(), "subtitle", {"target": BV, "part": 1, "language": "ai-zh", "timestamps": "true"}
     )
-    assert out["ok"] is True
-    assert out["backend"] == "bili-cli"
-    assert [a["backend"] for a in out["meta"]["attempts"]] == ["native", "bili-cli"]
-
-
-def test_cli_subtitle_refuses_params_it_cannot_honour(monkeypatch):
-    monkeypatch.setattr(bilibili, "_reuse_subtitle_login", lambda timeout: None)
-    monkeypatch.setattr(
-        bilibili,
-        "_bili_json",
-        lambda args, timeout: pytest.fail("bili-cli must not run for unsupported params"),
-    )
-    for kwargs, fragment in (
-        ({"part": 2}, "part 2"),
-        ({"language": "ai-en"}, "ai-en"),
-        ({"timestamps": "false"}, "omit timestamps"),
-    ):
-        with pytest.raises(ReachError) as exc:
-            _channel()._cli_subtitle(target=BV, timeout=5, **kwargs)
-        assert exc.value.code == "UPSTREAM_BROKEN"
-        assert fragment in exc.value.message
-
-
-def test_cli_subtitle_runs_with_default_params(monkeypatch):
-    monkeypatch.setattr(bilibili, "_reuse_subtitle_login", lambda timeout: None)
-    monkeypatch.setattr(
-        bilibili,
-        "_bili_json",
-        lambda args, timeout: {
-            "subtitle": {"available": True, "text": "public subtitle"},
-            "video": {"bvid": BV, "title": "T", "owner": {"name": "UP"}},
-        },
-    )
-    items = _channel()._cli_subtitle(
-        target=BV, part=1, language="ai-zh", timestamps="true", timeout=5
-    )
-    assert items[0]["text"] == "public subtitle"
+    assert out["ok"] is False
+    assert out["error"]["code"] == "NEED_LOGIN"
+    assert [a["backend"] for a in out["meta"]["attempts"]] == ["native"]
 
 
 def test_summary_runs_native_only(monkeypatch):
@@ -281,3 +226,7 @@ def test_summary_forwards_part_language_and_model(monkeypatch):
 def test_setup_problems_does_not_block_on_optional_summary_key(monkeypatch):
     monkeypatch.delenv("SUMMARY_API_KEY", raising=False)
     assert _channel().setup_problems() == []
+
+
+def _raise(code):
+    raise ReachError(code, code.lower())

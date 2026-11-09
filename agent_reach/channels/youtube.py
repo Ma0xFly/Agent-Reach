@@ -112,18 +112,45 @@ def _channel_url(target: str) -> str:
     return urlunsplit((parsed.scheme, parsed.netloc, f"/{kind}/{tab}", "", ""))
 
 
-def _run_ytdlp(args: list, timeout: float, cwd=None) -> str:
+_BOT_GATE = ("sign in to confirm", "not a bot")
+
+
+def _cookies_browser() -> str:
+    """Browser whose cookies yt-dlp may borrow when YouTube demands a login.
+
+    Set ``yt_cookies_browser`` in ~/.agent-reach/config.yaml to override; the
+    default is chrome, because anonymous egress IPs are bot-gated by YouTube
+    and a logged-in cookie jar is the only reliable fix (verified live).
+    """
+    from agent_reach.config import Config
+
+    value = str(Config().get("yt_cookies_browser") or "chrome").strip().lower()
+    return "" if value in {"", "none", "off", "no", "false"} else value
+
+
+def _run_ytdlp(args: list, timeout: float, cwd=None, *, retry: bool = True) -> str:
     try:
         return run_cmd(_ytdlp_argv(*args), timeout=timeout, cwd=cwd, label="yt-dlp")
     except CommandFailed as exc:
         err = exc.stderr.lower()
+        if retry and any(s in err for s in _BOT_GATE) and "--cookies-from-browser" not in args:
+            browser = _cookies_browser()
+            if browser:
+                try:
+                    return _run_ytdlp([*args, "--cookies-from-browser", browser],
+                                      timeout, cwd=cwd, retry=False)
+                except CommandFailed as retry_exc:
+                    exc = retry_exc
+                    err = retry_exc.stderr.lower()
         if any(s in err for s in ("video unavailable", "private video", "has been removed", "does not exist")):
             raise ReachError(NOT_FOUND, exc.message) from None
-        if "sign in to confirm" in err or "not a bot" in err:
+        if any(s in err for s in _BOT_GATE):
             raise ReachError(
                 PLATFORM_BLOCKED,
                 exc.message,
-                hint="YouTube returned a verification challenge. Stop this request; this does not establish that the public video requires login.",
+                hint=("YouTube bot-gated this egress IP. Set `yt_cookies_browser` in "
+                      "~/.agent-reach/config.yaml to a browser you are logged into "
+                      "(needs secretstorage on Linux), or route through another proxy node."),
             ) from None
         if "429" in err or "too many requests" in err:
             raise ReachError(RATE_LIMITED, exc.message) from None

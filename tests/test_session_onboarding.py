@@ -273,36 +273,6 @@ def test_dispatch_reports_missing_bridge_before_calling_the_site_backend(monkeyp
     assert health["code"] == "NEED_SETUP"
 
 
-def test_bili_reuses_only_site_cookies_through_upstream_writer_and_private_stdin(monkeypatch):
-    from pathlib import Path
-    from unittest.mock import Mock
-
-    from agent_reach.channels import bilibili
-    from agent_reach.runtime import session_reuse, tools
-    monkeypatch.setattr(session_reuse, '_source_cookies', lambda *a: ([{'name':'SESSDATA','value':'test-secret'}], 'daily'))
-    monkeypatch.setattr(tools,'resolve',lambda *a:'/private/bin/bili')
-    call=Mock(return_value='')
-    monkeypatch.setattr(bilibili,'run_cmd',call)
-    bilibili._reuse_subtitle_login(10)
-    args=call.call_args
-    assert 'test-secret' not in repr(args.args)
-    assert json.loads(args.kwargs['input_data']) == {'SESSDATA':'test-secret'}
-    assert 'save_credential' in args.args[0][-1]
-    assert Path(args.kwargs['env']['HOME']) == state.root() / 'sessions' / 'bili-cli'
-    state.mutate(lambda data: data['session_reuse'].__setitem__('bilibili', {'blocked':True}))
-    bilibili._reuse_subtitle_login(10)
-    assert call.call_count == 1
-
-
-def test_native_bili_subtitles_do_not_require_an_optional_browser_bridge(monkeypatch):
-    from agent_reach.channels import bilibili
-    monkeypatch.setattr(browser,'connected_contexts',lambda:(_ for _ in()).throw(ReachError('NEED_SETUP','OpenCLI is not installed')))
-    monkeypatch.setattr(bilibili,'run_cmd',lambda *a,**k:pytest.fail('started optional browser integration'))
-    monkeypatch.setattr(bilibili,'_bili_json',lambda *a:{'subtitle':{'available':True,'text':'Saved native login works'},'video':{'bvid':'BV1Jgf6YvE8e'}})
-    out=bilibili.BilibiliChannel()._cli_subtitle(target='BV1Jgf6YvE8e',timeout=2)
-    assert out[0]['text']=='Saved native login works'
-
-
 def test_node_warning_does_not_hide_upstream_error_and_404_is_not_login():
     from agent_reach.backends.opencli import _opencli_error
     warning='(node:123) Warning: experimental proxy\n'

@@ -258,9 +258,27 @@ def wait_for(check: Callable[[], bool], seconds: float, interval: float = 1.0) -
 # ── downloads ──
 
 
+def _github_token() -> str:
+    """Personal token used for api.github.com calls; unauthenticated quota is 60/h per IP."""
+    from agent_reach.config import Config
+
+    return str(Config().get("github_token") or os.environ.get("GITHUB_TOKEN") or "").strip()
+
+
 def _fetch(url: str, timeout: float = 30.0) -> bytes:
-    """GET `url` (honours the OS / env proxy settings)."""
-    req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    """GET `url` (honours the OS / env proxy settings).
+
+    api.github.com is authenticated when a github_token is configured: the
+    anonymous quota is 60 requests/hour shared per egress IP, which the OpenCLI
+    release lookup burns through on a proxied/VPN host.
+    """
+    headers = {"User-Agent": _USER_AGENT}
+    if url.startswith("https://api.github.com/"):
+        token = _github_token()
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+            headers["Accept"] = "application/vnd.github+json"
+    req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return resp.read()
 

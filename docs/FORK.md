@@ -45,7 +45,7 @@ fork 时继续。
 
 | 文件 | 改动意图 | 冲突风险 |
 |---|---|---|
-| `agent_reach/channels/bilibili.py` | 挂 native search/read/subtitle/summary；read 链 `bilibili-api → native → bili-cli`；扩展 `_cli_subtitle` 参数 | 高（上游也改 B站） |
+| `agent_reach/channels/bilibili.py` | 挂 native search/read/subtitle/summary；read 链 `bilibili-api → native`；**bili-cli 集成已删除**（`_cli_*`、`_bili_json`、`_reuse_subtitle_login`、login session），登录改由 config 的 `bilibili_sessdata` 提供 | 高（上游也改 B站） |
 | `agent_reach/channels/xiaohongshu.py` | search/read/comments 改为 `native → opencli`；timeout 120s；`setup_problems` | 中 |
 | `agent_reach/channels/youtube.py` | 新增 comments/channel；严格 video/channel target；复用 `_flat_video_item` | 高（上游改 yt-dlp/TLS/VTT） |
 | `agent_reach/channels/__init__.py` | 注册 `DouyinChannel()` | 低（两行） |

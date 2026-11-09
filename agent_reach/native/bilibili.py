@@ -144,8 +144,9 @@ def _request(
         ) from None
     if response.status_code >= 400:
         if response.status_code in (401, 403) and not (cookies or {}).get("SESSDATA"):
-            # An anonymous request was denied: this says nothing about the
-            # user's credentials, so keep the bili-cli fallback reachable.
+            # An anonymous request was denied. Ambiguous: either a login wall or
+            # the WAF, so report it as an upstream failure instead of claiming the
+            # user must log in (bili-cli no longer exists to disambiguate).
             raise ReachError(
                 UPSTREAM_BROKEN,
                 f"Bilibili denied the anonymous request (HTTP {response.status_code})",
@@ -881,10 +882,11 @@ def subtitle(
             }
         )
         if available:
-            # Tracks exist but not the requested one: non-final so bili-cli's
-            # own default-language attempt still runs.
+            # Tracks exist but not the requested one. NOT_FOUND (final, no pause):
+            # there is no fallback leg that could guess a better language, and
+            # pausing the whole backend for a wrong `--language` would be wrong.
             raise ReachError(
-                UPSTREAM_BROKEN,
+                NOT_FOUND,
                 f"no subtitles for language '{language}' (available: {', '.join(available)})",
             )
         wanted = f" for language '{language}'" if language else ""

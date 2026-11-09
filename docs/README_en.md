@@ -184,7 +184,7 @@ When something goes wrong, your agent tells you which platform, why, and what to
 
 ### 🔌 Every platform = an ordered list of tools (primary + fallbacks)
 
-Each action on each platform has an ordered list of tools to try. XiaoHongShu `search`/`read`/`comments` try native first, then OpenCLI; Bilibili `read` tries bilibili-api, then native, then bili-cli; YouTube `comments`/`channel` use yt-dlp; Douyin's three actions use the local MediaCrawler. `backend` in the result tells you which leg answered.
+Each action on each platform has an ordered list of tools to try. XiaoHongShu `search`/`read`/`comments` try native first, then OpenCLI; Bilibili `read` tries bilibili-api, then native; YouTube `comments`/`channel` use yt-dlp; Douyin's three actions use the local MediaCrawler. `backend` in the result tells you which leg answered.
 
 ```mermaid
 flowchart LR
@@ -240,7 +240,7 @@ Star it so you can find it next time you need it. ⭐
 
 ## Credits
 
-[OpenCLI](https://github.com/jackwener/opencli) · [bili-cli](https://github.com/public-clis/bilibili-cli) · [bilibili-api](https://github.com/Nemo2011/bilibili-api) · [boss-agent-cli](https://github.com/can4hou6joeng4/boss-agent-cli) · [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler) · [Spider_XHS](https://github.com/cv-cat/Spider_XHS) · [yt-dlp](https://github.com/yt-dlp/yt-dlp) · [Jina Reader](https://github.com/jina-ai/reader) · [Exa](https://exa.ai)
+[OpenCLI](https://github.com/jackwener/opencli) · [bilibili-api](https://github.com/Nemo2011/bilibili-api) · [boss-agent-cli](https://github.com/can4hou6joeng4/boss-agent-cli) · [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler) · [Spider_XHS](https://github.com/cv-cat/Spider_XHS) · [yt-dlp](https://github.com/yt-dlp/yt-dlp) · [Jina Reader](https://github.com/jina-ai/reader) · [Exa](https://exa.ai)
 
 ## Contact
 

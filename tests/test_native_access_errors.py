@@ -66,24 +66,22 @@ def test_youtube_bot_challenge_does_not_instruct_a_login(monkeypatch):
     assert exc.value.code == "PLATFORM_BLOCKED"
 
 
-def test_bilibili_subtitles_without_login_ask_for_login(monkeypatch, tmp_path):
+def test_bilibili_subtitle_without_login_asks_for_a_config_cookie(monkeypatch):
     from agent_reach.channels import bilibili
-    from agent_reach.runtime import sessions
-    monkeypatch.setattr(sessions, "sessions_root", lambda: tmp_path)
-    monkeypatch.setattr(bilibili, "_reuse_subtitle_login", lambda timeout: None)
-    monkeypatch.setattr(bilibili, "_bvid", lambda target, timeout: "BV1")
-    monkeypatch.setattr(bilibili, "_bili_json", lambda argv, timeout: {
-        "subtitle": {"available": False}, "warnings": [{"code": "subtitle_unavailable"}]})
-    ch = bilibili.BilibiliChannel()
+    from agent_reach.native import bilibili as native
+
+    def no_login(**kwargs):
+        raise ReachError("NEED_LOGIN", "Bilibili is not logged in", hint=bilibili._BILI_LOGIN_HINT)
+
+    monkeypatch.setattr(native, "subtitle", no_login)
     with pytest.raises(ReachError) as exc:
-        ch._cli_subtitle(target="https://www.bilibili.com/video/BV1", timeout=5)
+        bilibili.BilibiliChannel()._native_subtitle(target="BV1", timeout=5)
     assert exc.value.code == "NEED_LOGIN"
-    cred = tmp_path / "bili-cli" / ".bilibili-cli" / "credential.json"
-    cred.parent.mkdir(parents=True)
-    cred.write_text('{"sessdata":"test-session-cookie"}')
-    with pytest.raises(ReachError) as exc:
-        ch._cli_subtitle(target="https://www.bilibili.com/video/BV1", timeout=5)
-    assert exc.value.code == "UPSTREAM_BROKEN"  # logged in: a real upstream failure stays one
+    assert "bilibili_sessdata" in exc.value.hint
+
+    monkeypatch.setattr(native, "subtitle", lambda **k: [{"title": "T", "text": "ok"}])
+    items = bilibili.BilibiliChannel()._native_subtitle(target="BV1", timeout=5)
+    assert items[0]["text"] == "ok"
 
 
 @pytest.mark.parametrize("cookies,code", [([], "NEED_LOGIN"), ([{"name": "li_at"}], "UPSTREAM_BROKEN")])

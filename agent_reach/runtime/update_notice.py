@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import json
+import os
 import urllib.request
 from pathlib import Path
 from typing import Optional
 
 from agent_reach import __version__
+from agent_reach.config import Config
 from agent_reach.utils.paths import (
     PrivatePathError,
     atomic_write_private_text,
@@ -35,8 +37,11 @@ def version_tuple(v: str) -> tuple:
 
 def fetch_latest(timeout: float = FETCH_TIMEOUT) -> dict:
     """{latest, notes} of the latest GitHub release. Raises on network errors."""
-    req = urllib.request.Request(f"https://api.github.com/repos/{REPO}/releases/latest",
-                                 headers={"User-Agent": "agent-reach", "Accept": "application/vnd.github+json"})
+    headers = {"User-Agent": "agent-reach", "Accept": "application/vnd.github+json"}
+    token = str(Config().get("github_token") or os.environ.get("GITHUB_TOKEN") or "").strip()
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    req = urllib.request.Request(f"https://api.github.com/repos/{REPO}/releases/latest", headers=headers)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         rel = json.loads(resp.read())
     return {"latest": str(rel.get("tag_name", "")).lstrip("v"), "notes": (rel.get("body") or "")[:NOTES_MAX]}

@@ -1,40 +1,41 @@
 # -*- coding: utf-8 -*-
-"""Bilibili — native WBI backend with bilibili-api and bili-cli fallbacks.
+"""Bilibili — native WBI backend with a public-API fallback.
 
 `native` (agent_reach/native/bilibili.py) serves search/read/subtitles and the
-AI `summary` action without any third-party CLI. `bilibili-api` is the
-unauthenticated public API fallback for read/hot, and bili-cli remains the
-last-resort leg for search/read/subtitles when it is installed — yt-dlp was
-removed because Bilibili's risk control 412-blocks it.
+AI `summary` action with no third-party CLI at all. `bilibili-api` is the
+unauthenticated public API fallback for read/hot. bili-cli was removed: it
+duplicated everything native does while adding an install step and a separate
+credential file. yt-dlp was already removed because Bilibili's risk control
+412-blocks it.
+
+Login lives in config: set `bilibili_sessdata` (and `bilibili_csrf`) in
+~/.agent-reach/config.yaml, or install `rookiepy` so native can reuse the
+Chrome cookie jar. Reach never logs in on the user's behalf.
 """
 
 import json
 import re
 import urllib.request
-from typing import Any
 from urllib.parse import urlsplit
 
 from agent_reach.runtime.result import (
     BAD_INPUT,
-    NEED_LOGIN,
     NOT_FOUND,
-    PLATFORM_BLOCKED,
-    RATE_LIMITED,
     UPSTREAM_BROKEN,
     ReachError,
     make_item,
     unix_to_iso,
 )
-from agent_reach.runtime.run import CommandFailed, http_request, run_cmd
-from agent_reach.runtime.sessions import has_login_state, session_env
+from agent_reach.runtime.run import http_request
 
 from .base import Action, Channel, Param
 
 _BV_RE = re.compile(r"BV[0-9A-Za-z]{10}")
 _BV_HINT = "target must be a BV id or a bilibili.com / b23.tv video link"
 _BILI_LOGIN_HINT = (
-    "Bilibili subtitles need a login. Ask the user to run `agent-reach login bilibili` "
-    "and scan the QR code themselves; never log in on their behalf."
+    "Bilibili subtitles need a login. Put SESSDATA in ~/.agent-reach/config.yaml "
+    "as `bilibili_sessdata` (optional: `bilibili_csrf`), or install `rookiepy` so "
+    "Reach can reuse the Chrome cookie jar. Never log in on the user's behalf."
 )
 
 
@@ -69,76 +70,6 @@ def _bvid(target: str, timeout: float) -> str:
         if m:
             return m.group(0)
     raise ReachError(BAD_INPUT, _BV_HINT)
-
-
-def _bili_json(args: list, timeout: float) -> Any:
-    """Run bili-cli with --json; map its error envelope to unified codes."""
-    try:
-        out = run_cmd(["bili", *args, "--json"], timeout=timeout, env=session_env("bili-cli"))
-    except CommandFailed as exc:
-        out = exc.stdout
-        if "{" not in out:
-            raise
-    try:
-        payload = json.loads(out[out.index("{"):])
-    except ValueError:
-        raise ReachError(UPSTREAM_BROKEN, "bili-cli returned unreadable output") from None
-    if not payload.get("ok"):
-        err = payload.get("error") or {}
-        code = str(err.get("code", ""))
-        message = str(err.get("message", "bili-cli failed"))[:500]
-        upstream_hint = str(err.get("hint") or "").strip() or None
-        if any(word in code.lower() for word in ("risk", "captcha", "verification")):
-            raise ReachError(PLATFORM_BLOCKED, message, hint=upstream_hint)
-        if "rate" in code.lower() or "频繁" in message:
-            raise ReachError(RATE_LIMITED, message)
-        if code == "not_found":
-            raise ReachError(NOT_FOUND, message)
-        if "login" in code or "auth" in code or "credential" in code:
-            raise ReachError(NEED_LOGIN, message, hint=_BILI_LOGIN_HINT)
-        raise ReachError(UPSTREAM_BROKEN, message, hint=upstream_hint)
-    return payload.get("data") or {}
-
-
-def _reuse_subtitle_login(timeout: float) -> None:
-    """Use the official upstream credential writer; no browser launch or database read."""
-    import os
-    from pathlib import Path
-
-    from agent_reach.runtime import session_reuse, state, tools
-    saved = state.load().get("session_reuse", {}).get("bilibili", {})
-    if saved.get("blocked") or saved.get("source") == "manual":
-        return
-    cookies, source = session_reuse._source_cookies("bilibili", ("bilibili.com",))
-    jar = {c["name"]: c["value"] for c in cookies}
-    if not jar.get("SESSDATA"):
-        return  # keep a saved native login when no connected local source exists
-    exe = tools.resolve("bili")
-    if not exe:
-        return
-    python = Path(exe).with_name("python.exe" if os.name == "nt" else "python")
-    script = (
-        "import json,sys;from bili_cli.auth import save_credential;"
-        "from bilibili_api import Credential;d=json.load(sys.stdin);"
-        "save_credential(Credential(sessdata=d.get('SESSDATA',''),bili_jct=d.get('bili_jct',''),"
-        "ac_time_value=d.get('ac_time_value',''),buvid3=d.get('buvid3',''),"
-        "buvid4=d.get('buvid4',''),dedeuserid=d.get('DedeUserID','')))"
-    )
-    run_cmd([str(python), "-c", script], timeout=timeout, env=session_env("bili-cli"),
-            input_data=json.dumps(jar), label="Bilibili site login reuse")
-    state.mutate(lambda data: data.setdefault("session_reuse", {}).__setitem__("bilibili", {
-        "source": source, "copied_cookies": len(jar), "at": state.now(), "verified": False, "source_changed": False}))
-
-
-def _cli_video_item(v: dict, text=None) -> dict:
-    owner = v.get("owner") or {}
-    return make_item(
-        title=v.get("title"),
-        url=v.get("url") or (f"https://www.bilibili.com/video/{v['bvid']}" if v.get("bvid") else None),
-        author=owner.get("name") or v.get("author"),
-        text=v.get("description") if text is None else text,
-        raw=v,
-    )
 
 
 def _api_video_item(v: dict, text=None) -> dict:
@@ -177,10 +108,9 @@ class BilibiliChannel(Channel):
     description = "B站视频、字幕、搜索和 AI 总结"
 
     level = "default"
-    session = "bili-cli"
-    login_argv = ("bili", "login")
-    legacy_state = (".bilibili-cli",)
-    tools = ("bili-cli",)
+    #: No third-party CLI is installed or required: native covers every action
+    #: and bilibili-api is a plain HTTP fallback for read/hot.
+    tools = ()
     actions = (
         Action(
             "search",
@@ -189,7 +119,7 @@ class BilibiliChannel(Channel):
                 Param("query", "what to search for"),
                 Param("limit", "max results", required=False, type=int, default=5),
             ),
-            (("native", "_native_search"), ("bili-cli", "_cli_search")),
+            (("native", "_native_search"),),
             live_test={"query": "Python", "limit": 2},
         ),
         Action(
@@ -199,7 +129,6 @@ class BilibiliChannel(Channel):
             (
                 ("bilibili-api", "_api_read"),
                 ("native", "_native_read"),
-                ("bili-cli", "_cli_read"),
             ),
             live_test={"target": "BV1GJ411x7h7"},
         ),
@@ -207,7 +136,7 @@ class BilibiliChannel(Channel):
             "hot",
             "Trending videos",
             (Param("limit", "max items", required=False, type=int, default=10),),
-            (("bili-cli", "_cli_hot"), ("bilibili-api", "_api_hot")),
+            (("bilibili-api", "_api_hot"),),
             live_test={"limit": 2},
         ),
         Action(
@@ -237,7 +166,7 @@ class BilibiliChannel(Channel):
                     default="true",
                 ),
             ),
-            (("native", "_native_subtitle"), ("bili-cli", "_cli_subtitle")),
+            (("native", "_native_subtitle"),),
             # This canonical test video has human zh-Hans tracks but no ai-zh one;
             # without a language override the native leg correctly returns NOT_FOUND.
             live_test={"target": "BV1GJ411x7h7", "language": "zh-Hans"},
@@ -330,71 +259,9 @@ class BilibiliChannel(Channel):
             timeout=timeout,
         )
 
-    def _cli_search(self, *, query: str, limit: int, timeout: float) -> list:
-        data = _bili_json(["search", query, "--type", "video", "-n", str(limit)], timeout)
-        return [_cli_video_item(v) for v in (data if isinstance(data, list) else [])[:limit]]
-
-    def _cli_read(self, *, target: str, timeout: float) -> list:
-        data = _bili_json(["video", _bvid(target, timeout)], timeout)
-        return [_cli_video_item(data.get("video") or {})]
-
     def _api_read(self, *, target: str, timeout: float) -> list:
         return [_api_video_item(_bili_api(f"/x/web-interface/view?bvid={_bvid(target, timeout)}", timeout))]
-
-    def _cli_hot(self, *, limit: int, timeout: float) -> list:
-        data = _bili_json(["hot", "-n", str(limit)], timeout)
-        return [_cli_video_item(v) for v in (data.get("items") or [])[:limit]]
 
     def _api_hot(self, *, limit: int, timeout: float) -> list:
         data = _bili_api(f"/x/web-interface/popular?ps={limit}&pn=1", timeout)
         return [_api_video_item(v) for v in (data.get("list") or [])[:limit]]
-
-    def _cli_subtitle(
-        self,
-        *,
-        target: str,
-        part=None,
-        language=None,
-        timestamps=True,
-        timeout: float,
-    ) -> list:
-        # bili-cli only returns P1 with its own language/timestamp choices. Refuse
-        # requests it cannot honour instead of returning silently wrong data.
-        if part not in (None, 1):
-            raise ReachError(
-                UPSTREAM_BROKEN,
-                f"bili-cli fallback only supports part 1, not part {part}; "
-                "use `--backend native` for other parts",
-            )
-        requested_language = str(language or "ai-zh").strip()
-        if requested_language != "ai-zh":
-            raise ReachError(
-                UPSTREAM_BROKEN,
-                f"bili-cli fallback cannot select subtitle language '{requested_language}'; "
-                "use `--backend native`",
-            )
-        requested_timestamps = timestamps
-        if isinstance(requested_timestamps, str):
-            requested_timestamps = requested_timestamps.strip().lower() not in {
-                "false",
-                "0",
-                "no",
-                "off",
-            }
-        if requested_timestamps is False:
-            raise ReachError(
-                UPSTREAM_BROKEN,
-                "bili-cli fallback cannot omit timestamps; use `--backend native`",
-            )
-        _reuse_subtitle_login(timeout)
-        data = _bili_json(["video", _bvid(target, timeout), "--subtitle"], timeout)
-        sub = data.get("subtitle") or {}
-        if not sub.get("available"):
-            # Without a Bilibili login, upstream only says subtitles were unavailable.
-            if not has_login_state("bili-cli"):
-                raise ReachError(NEED_LOGIN, "Bilibili is not logged in", hint=_BILI_LOGIN_HINT)
-            if any(w.get("code") == "subtitle_unavailable" for w in data.get("warnings", []) if isinstance(w, dict)):
-                raise ReachError(UPSTREAM_BROKEN, "Bilibili could not retrieve subtitles; this does not prove the video has none")
-            raise ReachError(NOT_FOUND, "this video has no subtitles")
-        text = sub.get("text") or "\n".join(i.get("content", "") for i in sub.get("items") or [])
-        return [_cli_video_item(data.get("video") or {}, text=text)]

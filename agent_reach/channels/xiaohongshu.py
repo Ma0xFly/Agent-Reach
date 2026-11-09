@@ -18,8 +18,14 @@ class XiaoHongShuChannel(Channel):
 
     level = "optional"
     login_url = "https://www.xiaohongshu.com/explore"
-    tools = ("opencli",)
-    prereqs = ("node", "chrome")
+    #: The native backend answers every action without a browser; OpenCLI is a
+    #: fallback leg, not a prerequisite. Keep `add` cheap so routing can flip to
+    #: native (public-web only preempts a channel that was never added).
+    tools = ()
+    prereqs = ()
+    #: Native answers everything; the OpenCLI browser leg stays available for
+    #: `agent-reach login xiaohongshu` but `add` must not pull node/cli/chrome.
+    browser_optional = True
 
     def setup_problems(self):
         from agent_reach.config import Config
@@ -37,9 +43,11 @@ class XiaoHongShuChannel(Channel):
         spider = _spider_dir(interpreter)
         if not (spider / "apis").is_dir():
             problems.append(f"Spider_XHS checkout not found: {spider}")
-        browser = setup_problems(self.name)
-        if browser:
-            problems.extend(f"opencli fallback: {problem}" for problem in browser)
+        if problems:
+            # Only mention the browser leg when the native leg cannot answer.
+            browser = setup_problems(self.name)
+            if browser:
+                problems.extend(f"opencli fallback: {problem}" for problem in browser)
         return problems
 
     actions = (

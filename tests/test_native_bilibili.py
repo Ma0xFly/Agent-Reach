@@ -488,8 +488,9 @@ def test_missing_requested_language_is_non_final_upstream_broken(monkeypatch):
     )
     with pytest.raises(ReachError) as exc:
         native.subtitle(BV, language="ai-zh", timeout=5)
-    assert exc.value.code == "UPSTREAM_BROKEN"
-    assert exc.value.code != "NOT_FOUND"
+    # No fallback leg can guess a better language, and pausing the backend for a
+    # wrong --language would be wrong: this is a final NOT_FOUND, not transient.
+    assert exc.value.code == "NOT_FOUND"
     assert "zh-Hans" in exc.value.message
 
 

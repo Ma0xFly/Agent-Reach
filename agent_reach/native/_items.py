@@ -28,9 +28,9 @@ from agent_reach.utils.text import scrub_url_credentials
 _TAG_RE = re.compile(r"<[^>]+>")
 
 _BILI_LOGIN_HINT = (
-    "Bilibili needs a login for this request. Set `bili_cookie` in "
-    "~/.agent-reach/config.yaml (or export BILI_COOKIE), or sign in to "
-    "bilibili.com in Chrome; agent-reach can also fall back to bili-cli's own login."
+    "Bilibili needs a login for this request. Set `bilibili_sessdata` (and optionally "
+    "`bilibili_csrf`) or `bili_cookie` in ~/.agent-reach/config.yaml, or install "
+    "`rookiepy` so Reach can reuse the Chrome cookie jar. Reach never logs in for you."
 )
 
 BILI_NO_KEY_HINT = (
@@ -180,8 +180,8 @@ def map_bili_error(code: Any, message: Any, action: str = "read") -> ReachError:
     if numeric in (429, -509, -799):
         return ReachError(RATE_LIMITED, detail or "Bilibili rate limited the request")
     if numeric in (-412, -352, 412):
-        # WBI risk-control rejection: let bili-cli take over instead of
-        # treating this as an account-level block.
+        # WBI risk-control rejection. Kept non-final so `read` can still try
+        # native/bilibili-api after a bilibili-api block.
         return ReachError(
             UPSTREAM_BROKEN,
             detail or f"Bilibili rejected the request (code {code})",
