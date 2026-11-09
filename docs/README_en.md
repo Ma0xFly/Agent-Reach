@@ -97,19 +97,20 @@ This table reflects the current release.
 | Channel | Level | What it does | Needs |
 |---|---|---|---|
 | github | default | search repos, read a repo/README, read issues and PRs with comments | nothing |
-| youtube | default | video info, search, subtitles, speech-to-text | nothing; speech-to-text needs a Groq or OpenAI key |
+| youtube | default | video info, search, subtitles, comments, channel video lists, speech-to-text | nothing; speech-to-text needs a Groq or OpenAI key |
 | web | default | web search, page reading (fallback) | nothing |
 | v2ex | default | hot topics, nodes, topics with replies, users | nothing |
-| bilibili | default | search, video info, trending, subtitles | nothing; subtitles need a login (QR scan) |
+| bilibili | default | search, video info, trending, subtitles, AI summary | nothing; subtitles need a login (QR scan); summary needs summary_api_key |
 | reddit | optional | search posts, read text/comments, browse a subreddit | login |
 | linkedin | optional | search jobs, read job details | public jobs need nothing; in-site search needs a login |
-| xiaohongshu | optional | search notes, read text, view comments | login |
+| xiaohongshu | optional | search notes, read text, view comments | login; native backend first, browser fallback |
 | xueqiu | optional | real-time quotes, stock search, hot posts, hot stocks | quotes need nothing; hot posts and stocks need a login |
 | boss | optional | job and JD search | login |
 | xiaoyuzhou | optional | podcast transcription | Groq key |
 | twitter | experimental | search tweets, profiles, user tweets, threads | login |
 | facebook | experimental | search, profiles | login |
 | instagram | experimental | user search, profiles, user posts | login |
+| douyin | experimental | search videos, read a video, view comments | local MediaCrawler + a Douyin login |
 
 - **default**: works right after install; you can remove one, and updates won't add it back.
 - **optional**: say "add XX" to turn it on; whatever it needs is installed for you.
@@ -162,7 +163,7 @@ When something goes wrong, your agent tells you which platform, why, and what to
 
 ### 🔌 Every platform = an ordered list of tools (primary + fallbacks)
 
-Each action on each platform has an ordered list of tools to try. Reading a Bilibili video tries bili-cli first and falls back to Bilibili's public API; reading a web page tries Jina Reader, then Exa.
+Each action on each platform has an ordered list of tools to try. Xiaohongshu search tries the native backend first and falls back to the browser; reading a Bilibili video tries bilibili-api, then the native implementation, then bili-cli; reading a web page tries Jina Reader, then Exa.
 
 ```mermaid
 flowchart LR

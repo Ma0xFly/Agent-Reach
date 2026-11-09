@@ -419,12 +419,18 @@ def render_skill(lang: Optional[str] = None) -> str:
     lang = lang or _skill_lang()
     template = files("agent_reach").joinpath("skill").joinpath("SKILL_en.md" if lang == "en" else "SKILL.md").read_text("utf-8")
     labels = {"default": "default", "optional": "optional", "experimental": "experimental"}
-    rows = ["| channel | level | actions | login |", "|---|---|---|---|"]
+    header = ("| 渠道 | 等级 | 动作（后端链，从左到右） | 登录 |"
+              if lang == "zh" else "| channel | level | actions (backend chain, left to right) | login |")
+    rows = [header, "|---|---|---|---|"]
     for ch in _channels():
         login = f"`agent-reach login {ch.name}`" if _has_login(ch) else "-"
         if ch.name == "reddit":
             login = "浏览器路径按需" if lang == "zh" else "Browser path only, if required"
-        rows.append(f"| {ch.name} | {labels[ch.level]} | {', '.join(a.name for a in ch.actions)} | {login} |")
+        actions = "; ".join(
+            f"{action.name}: {' → '.join(label for label, _ in action.backends)}"
+            for action in ch.actions
+        )
+        rows.append(f"| {ch.name} | {labels[ch.level]} | {actions} | {login} |")
     return template.replace("{{CHANNEL_TABLE}}", "\n".join(rows)).replace("{{VERSION}}", __version__)
 
 

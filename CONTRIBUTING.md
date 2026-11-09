@@ -20,6 +20,17 @@ Checks before a PR:
 
 ## The channel contract
 
+Start a new channel from the scaffold:
+
+```bash
+python scripts/new_channel.py mysite --host mysite.com
+python -m pytest -q tests/test_mysite_channel.py
+```
+
+See [Add a source](docs/ADD-A-SOURCE.md) for the five steps, the error-code
+mapping, and the pitfalls (host matching, final vs retryable errors, browser
+queueing, and parameters shared by every backend).
+
 A channel is a `Channel` subclass in `agent_reach/channels/`, registered in `agent_reach/channels/__init__.py`. It declares:
 
 - `name`, `description`, and `can_handle(url)` so `agent-reach read <url>` can route links to it.

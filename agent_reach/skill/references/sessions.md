@@ -32,6 +32,8 @@
 
 - Boss 直聘站内搜索走 OpenCLI，共用专用浏览器。职位详情若因上游误报要求登录，不要让用户反复登录。
 - B 站只在读字幕时把已有登录交给 B 站官方命令行工具；普通搜索不准备浏览器。
+- 小红书搜索/阅读/评论优先 native 后端，native 失败后才走 OpenCLI 专用浏览器；不要把 native 的 `NEED_SETUP` 说成必须登录。
+- 抖音走本机 MediaCrawler，使用它自己的 `browser_data` 浏览器档案，不共用 Agent Reach 专用浏览器。`agent-reach login douyin` 暂不可用；需要登录时按错误 hint 让用户本人在 MediaCrawler 窗口扫码，不要索要或输出 Cookie。
 - 雪球社区动作需要登录；会话几小时内过期，过期后重复登录步骤。
 
 ## 退出和删除

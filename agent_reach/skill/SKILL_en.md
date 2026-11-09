@@ -2,8 +2,8 @@
 name: agent-reach
 description: >
   Read-only access to platform content: search, read posts, view comments, fetch subtitles, stock quotes and jobs.
-  Use when the user mentions or pastes a link from Xiaohongshu, Bilibili, Twitter/X, Reddit,
-  YouTube (subtitles, transcripts), GitHub, V2EX, Xueqiu/stock quotes, LinkedIn/Boss Zhipin jobs,
+  Use when the user mentions or pastes a link from Xiaohongshu, Bilibili, Douyin, Twitter/X, Reddit,
+  YouTube (subtitles, comments, channels, transcripts), GitHub, V2EX, Xueqiu/stock quotes, LinkedIn/Boss Zhipin jobs,
   Instagram, Facebook or Xiaoyuzhou podcasts; or says "search / look up / read this link" and your built-in
   web search or fetch is unavailable, fails, or misses the body;
   or wants to install, add/remove a platform, log in/out, check status, update or uninstall Agent Reach.
@@ -24,7 +24,9 @@ Before acting, say "using the agent-reach skill (channel X)". Once invoked, thes
 
 - For public content, use your own search/read tools first (optionally `site:domain`). Check body text, comments and subtitles separately; when they are enough, answer directly without adding channels or logging in.
 - Use Reach when your tools are unavailable, the result lacks what the user needs, or the user wants a site action a channel declares. Unsure of actions and params? Run `agent-reach channels`.
-- An added channel (a default one, or one added with `add`) sends search/read straight to its site tool. For channels not added yet, search/read first try anonymous public web access; results mark it with `backend: public-web`. `--backend public-web` limits to public web; `--backend <backend>` picks a site tool.
+- An added channel (a default one, or one added with `add`) sends search/read straight to its backend chain. In the `channels` table, `action: backend1 → backend2` is the order tried; the result's `backend` says which one answered. Native backends generally do not use the dedicated browser; only browser backends such as `opencli` and `boss-agent-cli` queue and pace.
+- `NEED_SETUP`, `UPSTREAM_BROKEN` and `TIMEOUT` fall through to the next backend; `NEED_LOGIN`, `NOT_FOUND`, `BAD_INPUT`, `PLATFORM_BLOCKED`, `RATE_LIMITED` and `BUSY` stop the chain. `NEED_SETUP` means this backend lacks a dependency or key, not that the platform requires login; fix what the hint says, then retry the same action.
+- For channels not added yet, search/read first try anonymous public web access; results mark it with `backend: public-web`. `--backend public-web` limits to public web; `--backend <backend>` picks a site backend.
 - A platform name or link only identifies the source; it never triggers install or login by itself.
 - Snippets, page shells, comment counts and subtitle track lists are not body text, comments or subtitles; say which you have. If the user skips login, still deliver the public results already gathered.
 
@@ -36,8 +38,8 @@ agent-reach read <url>                    # picks the channel from the URL
 
 ## Results and errors
 
-- `ok: true` → content in `items`; each has `title / url / author / published_at / text`, upstream data in `raw`.
-- `ok: false` → branch on `error.code` and follow `error.hint`:
+- `ok: true` → content in `items`; each has `title / url / author / published_at / text`, upstream data in `raw`; `backend` says which backend answered.
+- `ok: false` → branch on `error.code` and follow `error.hint`. `NEED_SETUP`, `UPSTREAM_BROKEN` and `TIMEOUT` are retryable down the chain; the rest are final:
 
 | error.code | What to do |
 |---|---|
@@ -61,7 +63,10 @@ The first time a site is used, if the user's Chrome is connected to the OpenCLI 
 
 ## Platform notes
 
-- Xiaohongshu read returns text descriptions only; never claim to understand the images or video.
+- Xiaohongshu read returns text descriptions only; never claim to understand the images or video. Search/read try the native backend first and only fall back to the browser.
+- Bilibili summary needs `summary_api_key`; without it follow the `NEED_SETUP` hint. Bilibili has no unified comments action, and subtitles may need a login.
+- YouTube `comments` returns the comments and replies actually loaded, not an exhaustive export; `channel` lists only recent uploads, not the full history.
+- Douyin uses the local MediaCrawler and its own Douyin browser profile. `agent-reach login douyin` is not available; when login is required, follow the error hint and let the user scan the QR code in MediaCrawler's window. Do not call it a dedicated-browser login.
 - When a Boss Zhipin search result has `salary_encoded=true`, never guess the salary digits; read the job link for the readable salary in the detail.
 - What each platform offers publicly and what Reach adds is in [Capability scope](references/capabilities.md): read it when the user asks "what can it get / is it complete" or you need to judge completeness.
 
@@ -69,7 +74,7 @@ The first time a site is used, if the user's Chrome is connected to the OpenCLI 
 
 {{CHANNEL_TABLE}}
 
-`default` channels are installed by default and can be removed; updates never add a removed one back. The `login` column is the authentication entry point, not a prerequisite for public content.
+`default` channels are installed by default and can be removed; updates never add a removed one back. The `login` column is the authentication entry point, not a prerequisite for public content. In the actions column, each backend chain is tried left to right; the next backend runs only after a retryable failure.
 
 ## After installation
 
