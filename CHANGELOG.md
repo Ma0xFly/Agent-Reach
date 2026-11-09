@@ -34,6 +34,7 @@ English:
 - B站：`channels/bilibili._bvid` 只跟随 `b23.tv`/`www.b23.tv` 的 HTTP(S) 短链，lookalike、userinfo、非 HTTP(S) 在发请求前返回 `BAD_INPUT`；`native/bilibili._cookie_file` 支持 `XDG_DATA_HOME`；`timestamps` 明确只接受字符串。
 - 抖音：`native/douyin.setup_problems` smoke-import `playwright`/`httpx`/`sqlalchemy`/`aiosqlite` 并给出 requirements 安装命令；`_run` 加跨进程 single-flight 锁，避免并发 MediaCrawler 撞 `browser_data`。
 - 发布验收：刷新 `.github/release-acceptance.json`；14 个动作通过 real-cli 验收，32 个未测动作按维护者 waiver 记录（缺登录/Key 或 YouTube bot-check）。
+- 文档：README/README_en 重写为当前开发版，补 15 个渠道、native 后端、抖音/YouTube 动作、fork 安装和扩展维护入口。
 
 English (technical):
 
@@ -47,6 +48,7 @@ English (technical):
 - Bilibili: `channels/bilibili._bvid` follows only HTTP(S) short links on `b23.tv`/`www.b23.tv`; lookalikes, userinfo and non-HTTP(S) targets fail with `BAD_INPUT` before any request. `native/bilibili._cookie_file` honors `XDG_DATA_HOME`, and `timestamps` is documented as string-only.
 - Douyin: `native/douyin.setup_problems` smoke-imports `playwright`/`httpx`/`sqlalchemy`/`aiosqlite` and prints the requirements install command; `_run` takes a cross-process single-flight lock so two MediaCrawler runs cannot collide on `browser_data`.
 - Release acceptance: refreshed `.github/release-acceptance.json`; 14 actions passed real-cli acceptance and 32 untested actions carry maintainer waivers (missing login/key or YouTube bot-check).
+- Docs: rewrote README/README_en for the current development version, covering 15 channels, native backends, Douyin/YouTube actions, fork installation and extension maintenance.
 
 ## [1.6.1] - 2026-11-01
 

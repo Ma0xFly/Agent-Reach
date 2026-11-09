@@ -32,6 +32,11 @@
   💬 Questions, a platform you want added, or curious how others use it? Come chat on <a href="https://discord.gg/FN6hpGrYKg">Discord</a>.
 </p>
 
+> **This is the [`Ma0xFly/Agent-Reach`](https://github.com/Ma0xFly/Agent-Reach) fork**, maintained from
+> [`Panniantong/Agent-Reach`](https://github.com/Panniantong/Agent-Reach). The current development
+> version includes 15 channels, native backends and the Douyin/YouTube actions; see
+> [Fork maintenance](FORK.md) for upstream sync and conflict handling.
+
 ---
 
 ## ❤️ Sponsors
@@ -70,9 +75,9 @@
 
 CLI agents such as Claude Code, Codex, Hermes Agent and OpenClaw come with web search and page fetching, but they mostly can't reach:
 
-- **Features that need a login**: listing an X account's posts, searching Reddit, reading LinkedIn job details or XiaoHongShu notes.
-- **What's inside video**: YouTube and Bilibili subtitles, plus speech-to-text for YouTube videos and Xiaoyuzhou podcasts.
-- **Chinese platforms**: Bilibili, XiaoHongShu, V2EX and Xueqiu, which general search covers poorly.
+- **Features that need a login**: searching XiaoHongShu notes, reading an X account's posts, reading LinkedIn/Boss job details, or viewing Xueqiu community posts.
+- **What's inside video**: Bilibili and YouTube subtitles; YouTube comments and channel video lists; Douyin videos and comments; speech-to-text for YouTube videos and Xiaoyuzhou podcasts.
+- **Chinese platforms**: Bilibili, XiaoHongShu, Douyin, V2EX and Xueqiu, which general search covers poorly.
 - **Clean structured data**: Xueqiu quotes, V2EX topics and replies, GitHub repos and issues, already cleaned up.
 
 Agent Reach installs and tests the tools behind these platforms for you, so your agent can use them with one command:
@@ -83,6 +88,14 @@ agent-reach youtube search "LLM agents"       # agent-reach <channel> <action> [
 agent-reach read https://www.v2ex.com/t/123   # picks the channel from the link
 ```
 
+### What this development version adds
+
+- **15 channels**: 5 default, 6 optional, 4 experimental; `agent-reach channels` is the source of truth for every action.
+- **Native backends**: XiaoHongShu, Bilibili and Douyin have in-repo implementations. Those actions try native first and fall back to a browser/CLI; `backend` in the result says which one answered.
+- **More video actions**: Bilibili AI summary, YouTube `comments`/`channel`, and Douyin `search`/`read`/`comments`.
+- **Maintainable**: `scripts/new_channel.py` scaffolds a channel, `docs/ADD-A-SOURCE.md` documents the contract, and `docs/FORK.md` covers upstream sync.
+- **Agent skill**: `agent-reach setup` places the current channel and backend-chain table for Claude Code, Codex and other agents; `agent-reach skill` shows where it is installed.
+
 ### ✅ Before you start, you might want to know
 
 - **Which agents?** Every agent.
@@ -92,7 +105,7 @@ agent-reach read https://www.v2ex.com/t/123   # picks the channel from the link
 
 ## Supported Platforms
 
-This table reflects the current release.
+This table reflects the current development version; `agent-reach channels` is the source of truth for actions and params.
 
 | Channel | Level | What it does | Needs |
 |---|---|---|---|
@@ -110,7 +123,7 @@ This table reflects the current release.
 | twitter | experimental | search tweets, profiles, user tweets, threads | login |
 | facebook | experimental | search, profiles | login |
 | instagram | experimental | user search, profiles, user posts | login |
-| douyin | experimental | search videos, read a video, view comments | local MediaCrawler + a Douyin login |
+| douyin | experimental | search videos, read a video, view comments | local MediaCrawler; scan the QR code yourself in MediaCrawler's window when prompted |
 
 - **default**: works right after install; you can remove one, and updates won't add it back.
 - **optional**: say "add XX" to turn it on; whatever it needs is installed for you.
@@ -120,13 +133,18 @@ This table reflects the current release.
 
 ## Quick Start
 
-Send this to your agent:
+### Install the current development version from this fork
+
+```bash
+uv tool install "git+https://github.com/Ma0xFly/Agent-Reach.git"
+agent-reach setup
+```
+
+Then run `agent-reach doctor --text` to see each channel's local state. You can also send this to your agent and let it read the repository instructions:
 
 ```
-Install Agent Reach: https://raw.githubusercontent.com/Panniantong/Agent-Reach/main/docs/install.md
+Install the current development version of Agent Reach: https://github.com/Ma0xFly/Agent-Reach
 ```
-
-Whether you're installing or upgrading, this one command is all you need.
 
 The agent does the rest. Along the way you may be asked to:
 
@@ -136,7 +154,9 @@ The agent does the rest. Along the way you may be asked to:
 
 About logins: some platforms reuse the logins already on your computer. Want a specific account instead, such as a secondary one? Just tell your agent. The agent never logs in for you and never asks for your password.
 
-> ⚠️ The PyPI package named `agent-reach` is NOT this project. Don't install it from PyPI; use the GitHub URL in install.md.
+> Want the upstream stable release instead? The [Panniantong/Agent-Reach install guide](install.md) still works, but does not include this fork's native backends or Douyin/YouTube actions.
+>
+> ⚠️ The PyPI package named `agent-reach` is NOT this project. Don't install it from PyPI.
 
 ---
 
@@ -148,7 +168,8 @@ Just tell your agent in plain words:
 
 | You say | What it does |
 |---|---|
-| "How is Agent Reach doing?" | tells you which channels work right now, and which worked before but broke since |
+| "How is Agent Reach doing?" | tells you which channels work right now, and which worked before but broke since; this is `agent-reach doctor --text` |
+| "Run a live check" | `agent-reach check <channel> --text` tests the declared actions over the network |
 | "Add Xiaohongshu" / "Remove Xiaohongshu" | turns it on and installs what it needs / turns it off and clears its login and private tools |
 | "My Xiaohongshu login expired" / "Switch accounts" / "Log out" | opens a login window where you sign in yourself / clears that site's login |
 | "Upgrade Agent Reach" | updates the program and every channel's tools in one go, and tells you anything left to do |
@@ -163,7 +184,7 @@ When something goes wrong, your agent tells you which platform, why, and what to
 
 ### 🔌 Every platform = an ordered list of tools (primary + fallbacks)
 
-Each action on each platform has an ordered list of tools to try. Xiaohongshu search tries the native backend first and falls back to the browser; reading a Bilibili video tries bilibili-api, then the native implementation, then bili-cli; reading a web page tries Jina Reader, then Exa.
+Each action on each platform has an ordered list of tools to try. XiaoHongShu `search`/`read`/`comments` try native first, then OpenCLI; Bilibili `read` tries bilibili-api, then native, then bili-cli; YouTube `comments`/`channel` use yt-dlp; Douyin's three actions use the local MediaCrawler. `backend` in the result tells you which leg answered.
 
 ```mermaid
 flowchart LR
@@ -178,6 +199,16 @@ flowchart LR
 
 Platforms change and tools break all the time. Switching tools only reorders that list; the way your agent uses Agent Reach stays the same.
 
+`NEED_SETUP`, `UPSTREAM_BROKEN` and `TIMEOUT` fall through to the next backend; `NEED_LOGIN`, `NOT_FOUND`, `BAD_INPUT`, `PLATFORM_BLOCKED`, `RATE_LIMITED` and `BUSY` are final and stop the chain. `NEED_SETUP` means the current backend lacks a dependency or key, not that the platform requires login.
+
+---
+
+## Extending and maintaining
+
+- Add a channel: `python scripts/new_channel.py mysite --host mysite.com`; see [Add a source](ADD-A-SOURCE.md).
+- Sync upstream: [Fork maintenance](FORK.md) lists the fork's modified files and known conflicts; `scripts/upstream-sync.sh` fetches, runs `git rebase --rebase-merges`, the full tests and three smoke commands, and **never pushes**.
+- Change agent behavior: edit the repository's `agent_reach/skill/`, then re-run `agent-reach setup` or `manage.place_skill()` instead of editing `~/.agents` directly.
+
 ---
 
 ## Security
@@ -185,6 +216,7 @@ Platforms change and tools break all the time. Switching tools only reorders tha
 - **Read-only**: it searches and reads; it never posts, comments, likes or sends messages.
 - **It never logs in for you or asks for your password.** Some platforms reuse a login already on your computer (that one site only, your browser unchanged); a login window opens only when you really need to sign in again, and you do it yourself.
 - **The dedicated browser is open to this computer only**; other machines can't connect to it.
+- **Douyin uses MediaCrawler's own `browser_data` profile**, not the dedicated browser. When a login is needed, you scan the QR code in MediaCrawler's window yourself; the agent never logs in or prints cookies.
 - **Use a secondary account.** The reused login is usually your main account, and platforms may restrict accounts used for automation. To switch, just tell your agent.
 - **Never paste keys into a chat**: run `agent-reach configure groq-key` in your own terminal to enter one.
 
@@ -196,11 +228,11 @@ Tell your agent "Uninstall Agent Reach". It lists what would be removed first an
 
 ## ⭐ Why star it
 
-I use this project every day myself, so I'll keep maintaining it.
+Agent Reach is an open-source project used every day; upstream and this fork keep it maintained.
 
-- When people ask for a new platform, I'll keep adding them
-- I try to keep every channel **working, easy to use and free**
-- When a platform changes its anti-bot rules or API, I'll find a way around it
+- Upstream channel additions and platform fixes are synced through [Fork maintenance](FORK.md)
+- New channels follow [Add a source](ADD-A-SOURCE.md); the scaffold's offline tests pass immediately
+- When a platform changes its anti-bot rules or API, the backend chain changes, not how your agent uses it
 
 Star it so you can find it next time you need it. ⭐
 
@@ -208,7 +240,7 @@ Star it so you can find it next time you need it. ⭐
 
 ## Credits
 
-[OpenCLI](https://github.com/jackwener/opencli) · [bili-cli](https://github.com/public-clis/bilibili-cli) · [boss-agent-cli](https://github.com/can4hou6joeng4/boss-agent-cli) · [yt-dlp](https://github.com/yt-dlp/yt-dlp) · [Jina Reader](https://github.com/jina-ai/reader) · [Exa](https://exa.ai)
+[OpenCLI](https://github.com/jackwener/opencli) · [bili-cli](https://github.com/public-clis/bilibili-cli) · [bilibili-api](https://github.com/Nemo2011/bilibili-api) · [boss-agent-cli](https://github.com/can4hou6joeng4/boss-agent-cli) · [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler) · [Spider_XHS](https://github.com/cv-cat/Spider_XHS) · [yt-dlp](https://github.com/yt-dlp/yt-dlp) · [Jina Reader](https://github.com/jina-ai/reader) · [Exa](https://exa.ai)
 
 ## Contact
 
@@ -222,7 +254,7 @@ For collaboration, or to join the community group, add me on WeChat:
   <img src="wechat-group-qr.jpg" width="280" alt="WeChat QR">
 </p>
 
-> For bug reports and feature requests, please use [GitHub Issues](https://github.com/Panniantong/Agent-Reach/issues) — easier to track.
+> For bug reports and feature requests, please use [GitHub Issues](https://github.com/Ma0xFly/Agent-Reach/issues) — easier to track.
 
 ## No token or crypto affiliation
 
